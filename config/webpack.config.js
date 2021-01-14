@@ -4,11 +4,11 @@ const HTMLWebpackPlugin = require("html-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
 module.exports = {
-    mode: "development",
-    entry: ["@babel/polyfill", "./src/js/index"],
+    mode: "production",
+    entry: ["@babel/polyfill", "./src/index.js"],
     output: {
-        filename: "js/[name]-[contenthash:5].js",
-        path: path.resolve(__dirname, "../", 'build')
+        path: path.resolve(__dirname, "../", 'build'),
+        filename: "[name]-[contenthash:4].js",
     },
     devServer: {
         open: true,
@@ -48,11 +48,12 @@ module.exports = {
             }
         ]
     },
+    devtool: "source-map",
     plugins: [
         new CleanWebpackPlugin(),
         new HTMLWebpackPlugin({
             title: "chinczyk! The game",
-            template: "../src/html/index.html"
+            template: "./src/html/index.html"
         }),
         new MiniCssExtractPlugin({
             filename: "[name].css"
