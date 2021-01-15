@@ -3,8 +3,10 @@ const {CleanWebpackPlugin} = require("clean-webpack-plugin");
 const HTMLWebpackPlugin = require("html-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
+const mode = process.env.NODE_ENV === "production" ? "production" : "development";
+
 module.exports = {
-    mode: "production",
+    mode,
     entry: ["@babel/polyfill", "./src/index.js"],
     output: {
         path: path.resolve(__dirname, "../", 'build'),
@@ -52,7 +54,7 @@ module.exports = {
     plugins: [
         new CleanWebpackPlugin(),
         new HTMLWebpackPlugin({
-            title: "chinczyk! The game",
+            title: "Chinczyk! The game",
             template: "./src/html/index.html"
         }),
         new MiniCssExtractPlugin({

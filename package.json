@@ -24,10 +24,11 @@
     "webpack-dev-server": "^3.11.2"
   },
   "scripts": {
-    "dev": "webpack --mode development",
-    "prod": "webpack --config ./config/webpack.config.js",
+    "prod": "NODE_ENV=production webpack --config ./config/webpack.config.js",
+    "dev": "NODE_ENV=development webpack --config ./config/webpack.config.js",
     "start": "webpack serve --config ./config/webpack.config.js",
-    "build": "webpack --watch --mode production"
+    "build-prod": "NODE_ENV=production webpack --watch --config ./config/webpack.config.js",
+    "build-dev": "NODE_ENV=development webpack --watch --config ./config/webpack.config.js"
   },
   "repository": {
     "type": "git",
