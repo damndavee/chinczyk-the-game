@@ -40,13 +40,12 @@ module.exports = {
                     ]
                 }
             },
-            {
-                test: /\.(png|jpe?g|gif)$/i,
-                use: [
-                    {
-                        loader: "file-loader"
-                    }
-                ]
+            {   
+                test: /\.(jpe?g|png|gif|svg)$/i, 
+                loader: 'file-loader',
+                options: {
+                    name: '/public/images/[name].[ext]',
+                }
             }
         ]
     },
