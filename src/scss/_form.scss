@@ -1,0 +1,123 @@
+.form {
+    width: 25rem;
+    height: 60%;
+    border: $grey-border;
+    padding: $p-small;
+    border-radius: 10px;
+    margin-top: $m-medium;
+    position: relative;
+    background-color: $primary-color;
+    box-shadow: 0 3px 10px rgba(0,0,0,.2);
+    // box-shadow: 15px 15px 1px $box-shadow-color, 15px 15px 1px 2px rgba(0,0,0,1);
+
+    &__head {
+        display: flex;
+        align-items: center;
+        justify-content: space-evenly;
+        height: 15%;
+        width: 100%;
+        font-size: $x-small-font-size;
+        border-bottom: $grey-border;
+
+        &-radio-players {
+            display: flex;
+            align-items: center;
+            justify-content: space-evenly;
+            width: 100%;
+        }
+    }
+
+    &__body {
+        padding: 0 10px;
+
+        &-player-name {
+            width: 100%;
+            display: inline-block;
+            padding: 5px 20px;
+            background: transparent;
+            border: none;
+            border-bottom: 2px solid $secondary-color;
+            color: #fff;
+            font-size: $small-font-size;
+        
+            &::placeholder {
+                color: #fff;
+                opacity: 0.5;
+            }
+            
+            &:focus {
+                outline: none;
+                border-bottom: $tertiary-color;
+            }
+        }
+    }
+
+    &__colors {
+        width: 100%;
+        height: 130px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 5px auto;
+
+        &-box {
+            width: 50px;
+            height: 50px;
+            position: relative;
+            margin: 5px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: $black-border;
+
+            &:hover {
+                background-color: #bbb3b3;
+            }
+
+            &--red { background-color: red; }
+            &--green { background-color: green; }
+            &--blue { background-color: blue; }
+            &--yellow {background-color: yellow; }
+        }
+    }
+
+    &__players {
+        min-width: 70%;
+        height: 100px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin: 30px auto 0 auto;
+
+        & p {
+            margin: 0 10px;
+        }
+    }
+
+    &__btn {
+        display: block;
+        padding: 10px 70px;
+        margin: 10px auto 0 auto;
+        border: none;
+        border: $black-border;
+        border-radius: 5px;
+        background-color: $tertiary-color;
+        // box  -shadow: 5px 5px 1px $box-shadow-color, 5px 5px 1px 2px rgba(0,0,0,1);
+        font-size: 18px;
+        cursor: pointer;
+        transition: background-color 0.3s linear;
+
+        &:hover {
+            background-color: darken($tertiary-color, 30%);
+        }
+
+        &:active {
+            transform: translate(5px, 5px);
+            box-shadow: none;
+        }
+
+        &:focus {
+            outline: none;
+        }
+    }
+}

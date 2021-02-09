@@ -1,0 +1,27 @@
+.header {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    color: $font-color;
+
+    &__side {
+        height: 100%;
+    }
+
+    &__left {
+        background-color: lighten($primary-color, 20%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        width: 35%;
+    }
+
+    &__right {
+        flex: 1;
+        background-image: url("../../public/images/background.jpg");
+        background-size: cover;
+        background-position: center center;
+        filter: grayscale(0.66);
+    }
+}

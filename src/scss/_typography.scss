@@ -1,0 +1,20 @@
+.heading {
+    font-size: $heading-font-size;
+    text-shadow: 0 5px 2px rgba(0,0,0,1);
+
+    & span:nth-child(1) {
+        color: blue;
+    }
+
+    & span:nth-child(2) {
+        color: yellow;
+    }
+
+    & span:nth-child(3) {
+        color: green;
+    }
+
+    & span:nth-child(4) {
+        color: red;
+    }
+}
