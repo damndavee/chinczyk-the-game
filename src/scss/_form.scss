@@ -60,7 +60,7 @@
         justify-content: center;
         margin: 5px auto;
 
-        &-box {
+        &-btn {
             width: 50px;
             height: 50px;
             position: relative;
@@ -68,9 +68,14 @@
             border-radius: 50%;
             cursor: pointer;
             border: $black-border;
+            outline: none;
 
             &:hover {
                 background-color: #bbb3b3;
+            }
+            
+            &:active {
+                outline: none;
             }
 
             &--red { background-color: red; }
@@ -84,13 +89,16 @@
         min-width: 70%;
         height: 100px;
         display: flex;
-        align-items: center;
         justify-content: center;
         flex-wrap: wrap;
         margin: 30px auto 0 auto;
 
         & p {
+            width: 40%;
             margin: 0 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
     }
 
