@@ -48,3 +48,10 @@ dom_el.colorPickerButtons.forEach(color => {
         form.changeHoverColor("out", color);
     })
 })
+
+dom_el.playersContainer.addEventListener("click", e => {
+    if(e.target.className === "player__remove-btn") {
+        e.preventDefault();
+        form.deletePlayer(e);
+    }
+})

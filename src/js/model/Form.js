@@ -1,12 +1,12 @@
 import {DOM_ELEMENTS} from "../base";
 import state from "../state";
-import {clearInput, errorHandler, lightenDarkenColor, clearContainer} from "../utils/functions";
-// import {changeTextButton, addPlayerField, addPlayersToDOM} from "../views/form";
+import {clearInput, lightenDarkenColor, clearContainer, insertHTML} from "../utils/functions";
 import Player from "./Player";
 
 export default class Form {
     constructor() {
-        this.p_fields = [...DOM_ELEMENTS.playersNamefields];
+        this.playersContainer = DOM_ELEMENTS.playersContainer;
+        this.playersFields = this.playersContainer.children;
         this.p_input = DOM_ELEMENTS.playerNameInput;
         this.colors = [...DOM_ELEMENTS.colorPickerButtons];
         this.startGameBtn = DOM_ELEMENTS.startGameBtn;
@@ -50,38 +50,43 @@ export default class Form {
     }
     
     addPlayerField(index, name, color) {
-        const nameSpan = document.createElement("span");
-        const colorSpan = document.createElement("span");
-    
-        colorSpan.classList.add("colored-box");
-        colorSpan.style.backgroundColor = color;
-    
-        nameSpan.innerHTML = name;
-        
-        this.p_fields[index].appendChild(nameSpan);
-        this.p_fields[index].appendChild(colorSpan);
-    }
-    
-    addDummyPlayerField(index) {
-        const dummyPlayer = document.createElement("b");
-    
-        dummyPlayer.innerHTML = `Player ${index+1}:`;
-    
-        this.p_fields[index].appendChild(dummyPlayer);
+        const field = `
+            <div class="player" data-name="${name}">
+            <div class="player__info">
+                <span class="player__index">${index+1})</span>
+                <span class="player__name">${name}</span>
+            </div>
+            <div class="player__actions">
+                <div class="player__color" style="background-color: ${color}"></div>
+                <div class="player__remove">
+                    <button class="player__remove-btn">X</button>
+                </div>
+            </div>
+        </div>
+        `;
+
+        insertHTML(this.playersContainer, field)
     }
     
     addPlayersToDOM() {
-        for(let i = 0; i < this.p_fields.length; i++) {
-            clearContainer(this.p_fields[i]);
-    
+        const spreadPlayersFields = [...this.playersFields];
+        for(let i = 0; i < spreadPlayersFields.length; i++) {
+            spreadPlayersFields[i].remove();
+
             if(state.players[i] !== undefined) {
                 const {name, color} = state.players[i];
                 this.addPlayerField(i, name, color);
-            } else {
-                this.addDummyPlayerField(i);
             }
         }
         this.counter = state.players.length;
+    }
+
+    deletePlayer(e) {
+        const name = e.target.closest(".player").dataset.name
+        console.log(name);
+        e.target.closest(".player").remove();
+        state.players = state.players.filter(i => i.name !== name)
+        this.unlockButtons([...this.playersFields].length);
     }
 
     unlockButtons(value) {
@@ -91,7 +96,7 @@ export default class Form {
         if(state.players.length > 0) {
             state.players = state.players.slice(0, +value);
             state.players.forEach(p => playersColors.push(p.color));
-            this.addPlayersToDOM(this.counter);
+            this.addPlayersToDOM();
             
             //bc - button color
             //fbc - filter button color
@@ -115,15 +120,12 @@ export default class Form {
         const extractedPlayersNames = state.players.map(p => p.name);
         const playerExistance = !extractedPlayersNames.includes(this.p_input.value);
 
-    
         if(state.players.length === state.numberOfPlayers) {
-            //2. usunać templatkę z formularzem
-            //3. przełączyć na planszę do gry
             alert("GAME HAS STARTED...");
         } else {   
             if(this.p_input.value && this.currentColor.dataset && playerExistance) {
                 const chosenColor = this.colors.filter(col => col.dataset.color === this.currentColor.dataset.color)[0];
-                const player = new Player(this.p_input.value.toLowerCase(), this.currentColor.dataset.color);
+                const player = new Player(this.p_input.value, this.currentColor.dataset.color);
 
                 this.addPlayerField(this.counter, this.p_input.value, this.currentColor.dataset.color);
     
@@ -138,7 +140,7 @@ export default class Form {
                 this.counter++;
                 this.changeTextButton();
             } else {
-                alert(errorHandler(this.p_input.value, this.currentColor.dataset, playerExistance));
+                //...
             }
         }
     }
@@ -152,7 +154,12 @@ export default class Form {
 //5. stworzyć plik z klasami, które dodaje dynamicznie poprzez js w tym pliku!
 //6. drobne poprawki wizualne (np placeholder przechodzi nad input)
 //7. Poprawić wygląd formularza (film z yt: https://www.youtube.com/watch?v=VnvzxGWiK54)
+//7.a) header na wzór -> https://www.youtube.com/watch?v=EHYR_CD8zgo
 //8. Poprawić dodawanie graczy (usuwa się "Player1:")
 //9. Stworzyć error.js -> views = możliwość wyświetlania customowych alertów
-//10. upgrade error handlderów (beznadziejnie wygląda kod = można go zoptymalizować)
-//11. Gdy osiągnie się zadeklarowaną liczbę graczy -> zablokować input (dodawanie gracza);
+//10. Stworzyć popup.js -> views = możliwośc wyświetlania powiadomień np "wybrano kolor: `zielony`"
+//11. upgrade error handlderów (beznadziejnie wygląda kod = można go zoptymalizować)
+//12. Gdy osiągnie się zadeklarowaną liczbę graczy -> zablokować input (dodawanie gracza);
+
+//BUGI
+// 1. Height "player__color" nie jest w rzeczywistości 100%;

@@ -7,57 +7,54 @@
 </head>
 <body>
     <header id="header" class="header">
-        <div class="header__side header__left">
-            <h1 class="heading"><span>Chin</span><span>czyk!</span> <span>The</span> <span>game</span></h1>
-            <form class="form" id="form">
-                <div class="form__head">
-                    <div class="form__head-radio-players">
-                        <label class="radio radio-gradient">
-                            <span class="radio__input">
-                              <input type="radio" name="players" value="2" checked>
-                              <span class="radio__control"></span>
-                            </span>
-                            <span class="radio__label">2 players</span>
-                        </label>
-                        <label class="radio radio-gradient">
-                            <span class="radio__input">
-                              <input type="radio" name="players" value="3">
-                              <span class="radio__control"></span>
-                            </span>
-                            <span class="radio__label">3 players</span>
-                        </label>
-                        <label class="radio radio-gradient">
-                            <span class="radio__input">
-                              <input type="radio" name="players" value="4">
-                              <span class="radio__control"></span>
-                            </span>
-                            <span class="radio__label">4 players</span>
-                        </label>
+        <div class="header__inner-container">
+            <div class="header__form-container">
+                <form class="form" id="form">
+                    <div class="form__head">
+                        <div class="form__head-radio-players">
+                            <label class="radio radio-gradient">
+                                <span class="radio__input">
+                                  <input type="radio" name="players" value="2" checked>
+                                  <span class="radio__control"></span>
+                                </span>
+                                <span class="radio__label">2 players</span>
+                            </label>
+                            <label class="radio radio-gradient">
+                                <span class="radio__input">
+                                  <input type="radio" name="players" value="3">
+                                  <span class="radio__control"></span>
+                                </span>
+                                <span class="radio__label">3 players</span>
+                            </label>
+                            <label class="radio radio-gradient">
+                                <span class="radio__input">
+                                  <input type="radio" name="players" value="4">
+                                  <span class="radio__control"></span>
+                                </span>
+                                <span class="radio__label">4 players</span>
+                            </label>
+                        </div>
                     </div>
-                </div>
+    
+                    <div class="form__body">
+                        <div class="form__colors">
+                            <button class="form__colors-btn form__colors-btn--red" data-color="red" data-hex="ff0000"></button>
+                            <button class="form__colors-btn form__colors-btn--green" data-color="green" data-hex="008000"></button>
+                            <button class="form__colors-btn form__colors-btn--blue" data-color="blue" data-hex="0000ff"></button>
+                            <button class="form__colors-btn form__colors-btn--yellow" data-color="yellow" data-hex="ffff00"></button>
+                        </div>
+                         
+                        <div class="form__players-list"></div>
 
-                <div class="form__body">
-                    <div class="form__colors">
-                        <button class="form__colors-btn form__colors-btn--red" data-color="red" data-hex="ff0000"></button>
-                        <button class="form__colors-btn form__colors-btn--green" data-color="green" data-hex="008000"></button>
-                        <button class="form__colors-btn form__colors-btn--blue" data-color="blue" data-hex="0000ff"></button>
-                        <button class="form__colors-btn form__colors-btn--yellow" data-color="yellow" data-hex="ffff00"></button>
+                        <input class="form__body-player-name" type="text" id="player-name" placeholder="enter player name..." required>
+    
+                        <button class="form__btn" id="start-game">Add Player</button>
                     </div>
-                    
-                    <input class="form__body-player-name" type="text" id="player-name" placeholder="enter player name..." required>
-                    
-                    <div class="form__players">
-                        <p><b>Player 1:</b></p>
-                        <p><b>Player 2:</b></p>
-                        <p><b>Player 3:</b></p>
-                        <p><b>Player 4:</b></p>
-                    </div>
-
-                    <button class="form__btn" id="start-game">Add Player</button>
-                </div>
-            </form>
+                </form>
+            </div>
         </div>
-        <div class="header__side header__right"></div>
     </header>
+
+    <div class="popup"></div>
 </body>
 </html>
