@@ -1,15 +1,16 @@
 import {DOM_ELEMENTS} from "../base";
 import state from "../state";
-import {clearInput, lightenDarkenColor, clearContainer, insertHTML} from "../utils/functions";
+import {clearContainer, clearInput} from "../utils/functions";
 import Player from "./Player";
+import * as formView from "../views/form";
+import * as notificationController from "../controller/notification";
+import * as notificationView from "../views/notification";
 
 export default class Form {
     constructor() {
-        this.playersContainer = DOM_ELEMENTS.playersContainer;
-        this.playersFields = this.playersContainer.children;
+        this.playersFields = DOM_ELEMENTS.playersContainer.children;
         this.p_input = DOM_ELEMENTS.playerNameInput;
         this.colors = [...DOM_ELEMENTS.colorPickerButtons];
-        this.startGameBtn = DOM_ELEMENTS.startGameBtn;
         this.counter = 0;
         this.currentColor = "";
     }
@@ -21,53 +22,7 @@ export default class Form {
         color.classList.add("selected");
     }
 
-    changeTextButton() {
-        if(state.players.length === state.numberOfPlayers) {
-            this.startGameBtn.textContent = "Start Game!";
-        } else {
-            this.startGameBtn.textContent = "Add Player";
-        }
-    }
-    
-    changeHoverColor(flag, color) {
-        // flag bascially tells us if the event listener is wheter "mouseover" or "mouseout"
-        const hexColorBox = color.dataset.hex.toUpperCase();
-    
-        switch (flag) {
-            case "enter": {
-                color.style.backgroundColor = `#${lightenDarkenColor(hexColorBox, 90)}`;
-                break;
-            }
-            case "out": {
-                color.style.backgroundColor = color.dataset.color;
-                break;
-            }        
-            default: {
-                color.style.backgroundColor = "black";
-                break;
-            }
-        }
-    }
-    
-    addPlayerField(index, name, color) {
-        const field = `
-            <div class="player" data-name="${name}">
-            <div class="player__info">
-                <span class="player__index">${index+1})</span>
-                <span class="player__name">${name}</span>
-            </div>
-            <div class="player__actions">
-                <div class="player__color" style="background-color: ${color}"></div>
-                <div class="player__remove">
-                    <button class="player__remove-btn">X</button>
-                </div>
-            </div>
-        </div>
-        `;
-
-        insertHTML(this.playersContainer, field)
-    }
-    
+    //generateDomPlayers
     addPlayersToDOM() {
         const spreadPlayersFields = [...this.playersFields];
         for(let i = 0; i < spreadPlayersFields.length; i++) {
@@ -75,44 +30,56 @@ export default class Form {
 
             if(state.players[i] !== undefined) {
                 const {name, color} = state.players[i];
-                this.addPlayerField(i, name, color);
+                formView.addPlayerField(i, name, color);
             }
         }
         this.counter = state.players.length;
     }
 
     deletePlayer(e) {
-        const name = e.target.closest(".player").dataset.name
-        console.log(name);
+        const name = e.target.closest(".player").dataset.name;
+        const success = notificationController.successHandler("playerRemoved");
         e.target.closest(".player").remove();
-        state.players = state.players.filter(i => i.name !== name)
+        state.players = state.players.filter(i => i.name !== name);
         this.unlockButtons([...this.playersFields].length);
+        notificationView.displayNotification(success, "success");
+        formView.changeTextButton();
     }
 
+    //unlockButtonsAnd... (invent new name)
     unlockButtons(value) {
         const playersColors = [];
         const buttonColors = this.colors;
 
-        if(state.players.length > 0) {
-            state.players = state.players.slice(0, +value);
-            state.players.forEach(p => playersColors.push(p.color));
-            this.addPlayersToDOM();
-            
-            //bc - button color
-            //fbc - filter button color
-            buttonColors.filter(bc => !playersColors.includes(bc.dataset.color)).forEach(fbc => {
-                if(fbc.disabled) {
-                    fbc.disabled = false;
-                    fbc.classList.remove("disabled");
-                }
-            })
-        }
+        state.players = state.players.slice(0, +value);
+        state.players.forEach(p => playersColors.push(p.color));
+        this.addPlayersToDOM();
+        
+        //bc - button color
+        //fbc - filter button color
+        buttonColors.filter(bc => !playersColors.includes(bc.dataset.color)).forEach(fbc => {
+            if(fbc.disabled) {
+                fbc.disabled = false;
+                fbc.classList.remove("disabled");
+            }
+        })
     }
 
+    // unlockButtons() {
+        
+    // }
+
+    // updatePlayersListDOM() {
+
+    // }
+
+    //rozbić na 2 metody. Jedna zmienia ilość graczy, druga manipuluje DOMem
     changeAmountOfPlayers(value) {
+        //1
         state.numberOfPlayers = +value;
+        //2
         this.unlockButtons(value);
-        this.changeTextButton(state);
+        formView.changeTextButton();
     }
 
     submitForm(e) {
@@ -120,27 +87,39 @@ export default class Form {
         const extractedPlayersNames = state.players.map(p => p.name);
         const playerExistance = !extractedPlayersNames.includes(this.p_input.value);
 
+        const player = {
+            name: this.p_input.value,
+            color: this.currentColor === "" ? undefined : this.currentColor.dataset.color,
+            existance: playerExistance
+        }
+        
+        const error = notificationController.errorHandler(player);
+        const success = notificationController.successHandler("playerAdded");
+        
+        // reverse the condition
         if(state.players.length === state.numberOfPlayers) {
-            alert("GAME HAS STARTED...");
+            clearContainer();
         } else {   
-            if(this.p_input.value && this.currentColor.dataset && playerExistance) {
+            if(error.flag) {
+                notificationView.displayNotification(error.msg, "error");
+            } else {
                 const chosenColor = this.colors.filter(col => col.dataset.color === this.currentColor.dataset.color)[0];
                 const player = new Player(this.p_input.value, this.currentColor.dataset.color);
-
-                this.addPlayerField(this.counter, this.p_input.value, this.currentColor.dataset.color);
+    
+                formView.addPlayerField(this.counter, this.p_input.value, this.currentColor.dataset.color);
     
                 chosenColor.classList.add("disabled");
                 chosenColor.classList.remove("selected");
                 chosenColor.disabled = true;
     
                 player.addPlayerToState();
+                notificationView.displayNotification(success, "success");
+    
                 clearInput(this.p_input);
     
                 this.currentColor = "";
                 this.counter++;
-                this.changeTextButton();
-            } else {
-                //...
+                formView.changeTextButton();
             }
         }
     }
@@ -152,14 +131,12 @@ export default class Form {
 //3. Przenieść niektóre metody do form.js -> views
 //4. przenieść funkcjonalności z submit do osobnych metod
 //5. stworzyć plik z klasami, które dodaje dynamicznie poprzez js w tym pliku!
-//6. drobne poprawki wizualne (np placeholder przechodzi nad input)
-//7. Poprawić wygląd formularza (film z yt: https://www.youtube.com/watch?v=VnvzxGWiK54)
-//7.a) header na wzór -> https://www.youtube.com/watch?v=EHYR_CD8zgo
-//8. Poprawić dodawanie graczy (usuwa się "Player1:")
-//9. Stworzyć error.js -> views = możliwość wyświetlania customowych alertów
-//10. Stworzyć popup.js -> views = możliwośc wyświetlania powiadomień np "wybrano kolor: `zielony`"
-//11. upgrade error handlderów (beznadziejnie wygląda kod = można go zoptymalizować)
-//12. Gdy osiągnie się zadeklarowaną liczbę graczy -> zablokować input (dodawanie gracza);
+//6. drobne poprawki wizualne (np placeholder przechodzi nad input)"
+//7. upgrade error handlderów (beznadziejnie wygląda kod = można go zoptymalizować)
+//8. Gdy osiągnie się zadeklarowaną liczbę graczy -> zablokować input (dodawanie gracza);
+//9. Dodać możliwość edycji nazwy gracza
 
 //BUGI
 // 1. Height "player__color" nie jest w rzeczywistości 100%;
+// 2. Przechodzi "błąd", gdy nazwa gracza ma mniej niż 4 znaki lub więcej niż 10
+// 3. Przy "wystarczającej" ilości graczy, gdy wciskamy "Start Game" dalej się uruchamia error handler

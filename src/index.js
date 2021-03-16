@@ -1,21 +1,18 @@
 import "./scss/index.scss";
 import "../public/images/background.jpg";
+import {DOM_ELEMENTS as dom_el} from "./js/base";
+
 import Board from "./js/model/Board";
 import Form from "./js/model/Form";
 
-// import {changeHoverColor} from "./js/views/form";
-
-import {DOM_ELEMENTS as dom_el} from "./js/base";
+import * as formView from "./js/views/form";
+import * as notificationView from "./js/views/notification";
 
 const board = new Board();
 const form = new Form();
 
-import * as formController from "./js/controller/form";
-
-formController.test1();
-formController.test2();
-
 document.addEventListener("DOMContentLoaded", () => {
+    notificationView.createNotification();
     board.createBoard();
 })
 
@@ -41,11 +38,11 @@ dom_el.colorPickerButtons.forEach(color => {
     })
 
     color.addEventListener("mouseover", () => {
-        form.changeHoverColor("enter", color);
+        formView.changeHoverColor("enter", color);
     })
 
     color.addEventListener("mouseout", () => {
-        form.changeHoverColor("out", color);
+        formView.changeHoverColor("out", color);
     })
 })
 
