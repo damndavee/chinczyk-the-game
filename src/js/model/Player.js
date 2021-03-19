@@ -6,7 +6,11 @@ export default class Player {
         this.color = color;
     }
 
-    addPlayerToState() {
-        state.players.push({...this, pawns: 4});
+    static addPlayer(player) {
+        state.players.push({...player, pawns: 4});
+    }
+
+    static removePlayer(name) {
+        state.players = state.players.filter(i => i.name !== name);
     }
 }

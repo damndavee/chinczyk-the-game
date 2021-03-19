@@ -38,10 +38,7 @@ export function errorHandler(player) {
 
 export function successHandler(action) {
     let msg;
-    // - wybrano kolor
-    // - dodano gracza
-    // - usunięto gracza
-
+    
     switch (action) {
         case "playerAdded": {
             msg = "Player has been added!"

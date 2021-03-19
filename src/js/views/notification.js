@@ -11,7 +11,6 @@ export function createNotification() {
 
 export function displayNotification(msg, type) {
     const notification = document.querySelector("#header div#notification");
-    console.log(notification);
     notification.innerHTML = msg;
     notification.className = `notification translated ${type}`;
     
