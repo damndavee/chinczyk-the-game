@@ -1,0 +1,74 @@
+[data-home="blue-1"] {
+    grid-row: 1 / 2;
+    grid-column: 10 / 11;
+}
+
+[data-home="blue-2"] {
+    grid-row: 1 / 2;
+    grid-column: 11 / 12;
+}
+
+[data-home="blue-3"] {
+    grid-row: 2 / 3;
+    grid-column: 10 / 11;
+}
+
+[data-home="blue-4"] {
+    grid-row: 2 / 3;
+    grid-column: 11 / 12;
+}
+
+[data-home="green-1"] {
+    grid-row: 10 / 11;
+    grid-column: 1 / 2;
+}
+
+[data-home="green-2"] {
+    grid-row: 10 / 11;
+    grid-column: 2 / 3;
+}
+
+[data-home="green-3"] {
+    grid-row: 11 / 12;
+    grid-column: 1 / 2;
+}
+
+[data-home="green-4"] {
+    grid-row: 11 / 12;
+    grid-column: 2 / 3;
+}
+
+[data-home="red-1"] {
+    grid-row: 1 / 2;
+    grid-column: 1 / 2;
+}
+
+[data-home="red-2"] {
+    grid-row: 1 / 2;
+    grid-column: 2 / 3;
+}
+
+[data-home="red-3"] {
+    grid-row: 2 / 3;
+    grid-column: 1 / 2;
+}
+
+[data-home="red-4"] {
+    grid-area: 2/2/3/3;
+}
+
+[data-home="yellow-1"] {
+    grid-area: 10/10/11/11;
+}
+
+[data-home="yellow-2"] {
+    grid-area: 10/11/11/12;
+}
+
+[data-home="yellow-3"] {
+    grid-area: 11/10/12/11;
+}
+
+[data-home="yellow-4"] {
+    grid-area: 11/11/12/12;
+}

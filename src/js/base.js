@@ -5,5 +5,6 @@ export const DOM_ELEMENTS = {
     playerNameInput: document.querySelector("#player-name"),
     playersContainer: document.querySelector(".form__players-list"),
     playersFields: document.querySelector(".form__players-list").children,
-    startGameBtn: document.querySelector("#start-game")
+    startGameBtn: document.querySelector("#start-game"),
+    gameContainer: document.querySelector("#game"),
 }

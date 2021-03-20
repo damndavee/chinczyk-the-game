@@ -1,0 +1,61 @@
+.blue {
+    background-color: blue;
+}
+
+.green {
+    background-color: green;
+}
+
+.red {
+    background-color: red;
+}
+
+.yellow {
+    background-color: yellow;
+}
+
+.blue-start, 
+.green-start,
+.yellow-start,
+.red-start {
+    &::before {
+        content: "\2193";
+        font-size: 2rem;
+        margin-bottom: 5px;
+    }
+}
+
+.blue-start {
+    grid-row: 1 / 2;
+    grid-column: 7 / 8;
+
+    &::before {
+        content: "\2193";
+    }
+}
+
+.green-start {
+    grid-row: 11 / 12;
+    grid-column: 5 / 6;
+
+    &::before {
+        content: "\2191";
+    }
+}
+
+.red-start {
+    grid-row: 5 / 6;
+    grid-column: 1 / 2;
+
+    &::before {
+        content: "\2192";
+    }
+}
+
+.yellow-start {
+    grid-area: 7/11/8/12;
+    
+    &::before {
+        content: "\2190";
+    }
+}

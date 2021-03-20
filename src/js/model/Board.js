@@ -1,5 +1,5 @@
 import {field, fields} from "../utils/fields";
-import {DOM_ELEMENTS as dom_el} from "../base";
+import {DOM_ELEMENTS as domEl} from "../base";
 
 export default class Board {
     filterFields(filterParam) {
@@ -12,6 +12,7 @@ export default class Board {
         for (const {type, color} of startFields) {
             const field = document.createElement("div");
             field.className = `field field-play ${color} ${color}-${type}`;
+            field.dataset.start = `${color}`
 
             container.appendChild(field);
         }
@@ -56,7 +57,7 @@ export default class Board {
     createBoard() {
         const board = document.createElement("div");
         board.classList.add("board");
-        document.body.appendChild(board);
+        domEl.gameContainer.appendChild(board);
 
         this.createStartFields(board);
         this.createHomeFields(board);
