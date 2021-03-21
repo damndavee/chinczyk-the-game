@@ -1,16 +1,16 @@
-@import "./variables";
-@import "./utilities";
-@import "./typography";
-@import "./base";
+@import "./utilities/variables";
+@import "./utilities/utilities";
+@import "./utilities/typography";
+@import "./utilities/base";
 
-@import "./notification";
+@import "./formPage/notification";
+@import "./formPage/header";
+@import "./formPage/form";
+@import "./formPage/radio";
 
-@import "./header";
-@import "./form";
-@import "./player";
-@import "./radio";
+@import "./game/player";
+@import "./game/board";
 
-@import "./board";
 @import "./fields/home-fields";
 @import "./fields/meta-fields";
 @import "./fields/start-fields";
