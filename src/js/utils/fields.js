@@ -1,5 +1,29 @@
 export const fields = [
     {
+        type: "name",
+        color: "red",
+        classField: "board__name-template",
+        classColor: "board__name-template--red"
+    },
+    {
+        type: "name",
+        color: "green",
+        classField: "board__name-template",
+        classColor: "board__name-template--green"
+    },
+    {
+        type: "name",
+        color: "blue",
+        classField: "board__name-template",
+        classColor: "board__name-template--blue"
+    },
+    {
+        type: "name",
+        color: "yellow",
+        classField: "board__name-template",
+        classColor: "board__name-template--yellow"
+    },
+    {
         type: "home",
         color: "red",
         position: "1"

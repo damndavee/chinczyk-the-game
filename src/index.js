@@ -2,10 +2,11 @@ import "./scss/index.scss";
 import "../public/images/background.jpg";
 import {DOM_ELEMENTS as dom_el} from "./js/base";
 
-import * as formController from "./js/controller/form";
+import * as formController from "./js/controllers/form";
 
 import * as formView from "./js/views/form";
 import * as notificationView from "./js/views/notification";
+
 
 document.addEventListener("DOMContentLoaded", () => {
     notificationView.createNotification();
@@ -25,7 +26,6 @@ dom_el.numberOfPlayersRadioButtons.forEach(radio => {
     radio.addEventListener("change", () => {
         formController.changeAmountOfPlayers(radio.value);
         formController.updateFormBodyDOM(radio.value);
-        formView.changeTextButton();
     })
 });
 

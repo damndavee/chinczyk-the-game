@@ -2,13 +2,15 @@ import {DOM_ELEMENTS} from "../base";
 import state from "../state";
 import {clearInput} from "../utils/functions";
 
-import Player from "../model/Player";
+import Player from "../models/Player";
 
 import * as formView from "../views/form";
-import * as notificationController from "../controller/notification";
+import * as playerView from "../views/player";
+
+import * as notificationController from "./notification";
 import * as notificationView from "../views/notification";
 
-import Board from "../model/Board";
+import * as boardController from "./board";
 
 const {playersFields, playerNameInput, colorPickerButtons} = DOM_ELEMENTS;
 
@@ -23,7 +25,7 @@ function generatePlayersDOM() {
 
         if(state.players[i] !== undefined) {
             const {name, color} = state.players[i];
-            formView.addPlayerField(i, name, color);
+            playerView.addPlayerField(i, name, color);
         }
     }
 }
@@ -56,6 +58,8 @@ export function updateFormBodyDOM(value) {
             fbc.classList.remove("disabled");
         }
     })
+
+    formView.changeTextButton();
 }
 
 export function deletePlayer(e) {
@@ -77,7 +81,6 @@ export function submitForm(e) {
     e.preventDefault();
     const extractedPlayersNames = state.players.map(p => p.name);
     const playerExistance = !extractedPlayersNames.includes(playerNameInput.value);
-    const board = new Board();
     const player = {
         name: playerNameInput.value,
         color: state.pickedColor === "" ? undefined : state.pickedColor.dataset.color,
@@ -88,12 +91,12 @@ export function submitForm(e) {
 
     if(state.players.length === state.numberOfPlayers) {
         DOM_ELEMENTS.header.remove();
-        board.createBoard();
+        boardController.createBoard();    
     } else {   
         if(error.flag) {
             notificationView.displayNotification(error.msg, "error");
         } else {
-            formView.addPlayerField(state.players.length, playerNameInput.value, state.pickedColor.dataset.color);
+            playerView.addPlayerField(state.players.length, playerNameInput.value, state.pickedColor.dataset.color);
 
             disablePickedButton();
 
