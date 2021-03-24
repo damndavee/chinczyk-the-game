@@ -10,12 +10,14 @@ export default class Player {
     createPawns() {
         const pawns = [];
         for(let i = 0; i < 4; i++) {
-            pawns.push({poistion: `${this.color}-${i+1}`})
+            pawns.push({type: "home", poistion: `${this.color}-${i+1}`})
         }
         this.pawns = pawns;
     }
-    static addPlayer(player) {
-        state.players.push({...player, pawns: this.pawns});
+    
+    addPlayer() {
+        this.createPawns();
+        state.players.push({...this, pawns: this.pawns});
     }
 
     static removePlayer(name) {

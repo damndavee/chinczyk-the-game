@@ -7,10 +7,10 @@ import Player from "../models/Player";
 import * as formView from "../views/form";
 import * as playerView from "../views/player";
 
-import * as notificationController from "./notification";
+import * as notificationController from "../controllers/notification";
 import * as notificationView from "../views/notification";
 
-import * as boardController from "./board";
+import * as boardController from "../controllers/board";
 
 const {playersFields, playerNameInput, colorPickerButtons} = DOM_ELEMENTS;
 
@@ -81,33 +81,34 @@ export function submitForm(e) {
     e.preventDefault();
     const extractedPlayersNames = state.players.map(p => p.name);
     const playerExistance = !extractedPlayersNames.includes(playerNameInput.value);
-    const player = {
+    const valuesToCheck = {
         name: playerNameInput.value,
         color: state.pickedColor === "" ? undefined : state.pickedColor.dataset.color,
         existance: playerExistance
     }
-    const error = notificationController.errorHandler(player);
+    const error = notificationController.errorHandler(valuesToCheck);
     const success = notificationController.successHandler("playerAdded");
 
     if(state.players.length === state.numberOfPlayers) {
         DOM_ELEMENTS.header.remove();
-        boardController.createBoard();    
+        boardController.createBoard();  
+        console.log(state);
     } else {   
         if(error.flag) {
             notificationView.displayNotification(error.msg, "error");
         } else {
-            playerView.addPlayerField(state.players.length, playerNameInput.value, state.pickedColor.dataset.color);
-
+            const player = new Player(playerNameInput.value, state.pickedColor.dataset.color);
+            
             disablePickedButton();
 
-            Player.addPlayer(player);
-
+            playerView.addPlayerField(state.players.length, playerNameInput.value, state.pickedColor.dataset.color);
             notificationView.displayNotification(success, "success");
-
-            clearInput(playerNameInput);
-
-            state.pickedColor = "";
+            
+            player.addPlayer();
             formView.changeTextButton();
+            
+            clearInput(playerNameInput);
+            state.pickedColor = "";
         }
     }
 }

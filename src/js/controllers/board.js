@@ -1,9 +1,22 @@
-import {field, fields} from "../utils/fields";
+import {fields} from "../utils/fields";
 import {DOM_ELEMENTS as domEl} from "../base";
 import state from "../state";
 
 function filterFields(filterParam) {
     return fields.filter(({type}) => type === filterParam);
+}
+
+function attachPawns() {
+    const playerColors = state.players.map(p => p.color);
+    const homeColorFields = [...document.querySelectorAll("[data-field]")].filter(f => f.dataset.field.includes("home"));
+
+    homeColorFields.forEach(f => {
+        const extractedDataHome = f.dataset.field.split("-");
+        if(playerColors.includes(extractedDataHome[1])) {
+            f.classList.add("pawn");
+            f.style.backgroundColor = extractedDataHome[0];
+        }
+    })
 }
 
 function createNameTemplates(container) {
@@ -26,7 +39,7 @@ function createStartFields(container) {
     for (const {type, color} of startFields) {
         const field = document.createElement("div");
         field.className = `field field-play ${color} ${color}-${type}`;
-        field.dataset.start = `${color}`
+        field.dataset.field = `start-${color}-1`
 
         container.appendChild(field);
     }
@@ -38,7 +51,7 @@ function createHomeFields(container) {
     for (const {type, color, position} of homeFields) {
         const field = document.createElement("div");
         field.className = `field ${color} ${color}-${type}`;
-        field.dataset.home = `${color}-${position}`;
+        field.dataset.field = `home-${color}-${position}`;
 
         container.appendChild(field);
     }
@@ -50,7 +63,7 @@ function createMetaFields(container) {
     for (const {color, position} of metaFields) {
         const field = document.createElement("div");
         field.className = `field ${color}`;
-        field.dataset.meta = `${color}-${position}`;
+        field.dataset.field = `meta-${color}-${position}`;
 
         container.appendChild(field);
     }
@@ -62,7 +75,7 @@ function createRegularFields(container) {
     for (const {position} of regularFields) {
         const field = document.createElement("div");
         field.className = `field field-play field-${position}`;
-        field.dataset.regular = position;
+        field.dataset.field = `regular-${position}`;
 
         container.appendChild(field);
     }
@@ -78,4 +91,5 @@ export function createBoard() {
     createMetaFields(board);
     createRegularFields(board);
     createNameTemplates(board);
+    attachPawns();
 }

@@ -8,8 +8,17 @@ import * as formView from "./js/views/form";
 import * as notificationView from "./js/views/notification";
 
 
+// TESTING
+import * as boardController from "./js/controllers/board";
+import state from "./js/state";
+import * as gameController from "./js/controllers/game";
+// TESTING
+
 document.addEventListener("DOMContentLoaded", () => {
     notificationView.createNotification();
+    dom_el.header.remove();
+    boardController.createBoard();
+    console.log(state);
 })
 
 dom_el.startGameBtn.addEventListener("click", e => {
@@ -47,4 +56,11 @@ dom_el.playersContainer.addEventListener("click", e => {
     if(e.target.className === "player__remove-btn") {
         formController.deletePlayer(e);
     }
+})
+
+dom_el.gameContainer.addEventListener("click", e => {
+    if(e.target.classList.contains("pawn")) {
+        gameController.movePawn(e);
+    }
+    // console.log(e.target);
 })

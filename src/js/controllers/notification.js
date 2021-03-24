@@ -1,29 +1,29 @@
-export function errorHandler(player) {
+export function errorHandler(valuesToCheck) {
     let msg;
     let flag;
 
     switch (true) {
-        case (player.name === "" && player.color === undefined): {
+        case (valuesToCheck.name === "" && valuesToCheck.color === undefined): {
             msg = "Neither player name nor color was choosen!";
             break;
         }
-        case player.name === "": {
+        case valuesToCheck.name === "": {
             msg = "No player name was choosen!";
             break;
         }
-        case player.color === undefined: {
+        case valuesToCheck.color === undefined: {
             msg = "No color was choosen!";
             break;
         }
-        case !player.existance: {
+        case !valuesToCheck.existance: {
             msg = "Player with that name already exists!";
             break;
         }
-        case player.name.length > 10: {
+        case valuesToCheck.name.length > 10: {
             msg = "Name is too long. Choose between 4 and 10 characters!";
             break;
         }
-        case player.name.length < 4: {
+        case valuesToCheck.name.length < 4: {
             msg = "Name is too short. Choose between 4 and 10 characters!";
             break;
         }

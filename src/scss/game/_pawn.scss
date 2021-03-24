@@ -1,0 +1,12 @@
+.pawn {
+    &::after {
+        position: absolute;
+        content: "";
+        width: 50%;
+        height: 50%;
+        // background-color: orchid;
+        border: 1px solid #000;
+        cursor: pointer;
+        z-index: 2;
+    }
+}
