@@ -1,5 +1,5 @@
-import state from "../state";
-import {DOM_ELEMENTS} from "../base";
+import state from "../utils/state";
+import {DOM_ELEMENTS} from "../utils/base";
 import {lightenDarkenColor} from "../utils/functions";
 
 export function changeTextButton() {

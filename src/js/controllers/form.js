@@ -1,6 +1,7 @@
-import {DOM_ELEMENTS} from "../base";
-import state from "../state";
+import {DOM_ELEMENTS} from "../utils/base";
+import state from "../utils/state";
 import {clearInput} from "../utils/functions";
+import {CLASSES} from "../utils/classes";
 
 import Player from "../models/Player";
 
@@ -11,6 +12,7 @@ import * as notificationController from "../controllers/notification";
 import * as notificationView from "../views/notification";
 
 import * as boardController from "../controllers/board";
+import { Game } from "../models/Game";
 
 const {playersFields, playerNameInput, colorPickerButtons} = DOM_ELEMENTS;
 
@@ -33,16 +35,16 @@ function generatePlayersDOM() {
 function disablePickedButton() {
     const chosenColor = colorPickerButtons.filter(col => col.dataset.color === state.pickedColor.dataset.color)[0];
 
-    chosenColor.classList.add("disabled");
-    chosenColor.classList.remove("selected");
+    chosenColor.classList.add(CLASSES.DISABLED);
+    chosenColor.classList.remove(CLASSES.SELECTED);
     chosenColor.disabled = true;
 }
 
 export function setColor(color, e) {
     e.preventDefault();
     state.pickedColor = color;
-    colorPickerButtons.forEach(color => color.classList.remove("selected"));
-    color.classList.add("selected");
+    colorPickerButtons.forEach(color => color.classList.remove(CLASSES.SELECTED));
+    color.classList.add(CLASSES.SELECTED);
 }
 
 export function updateFormBodyDOM(value) {
@@ -55,7 +57,7 @@ export function updateFormBodyDOM(value) {
     colorPickerButtons.filter(bc => !playersColors.includes(bc.dataset.color)).forEach(fbc => {
         if(fbc.disabled) {
             fbc.disabled = false;
-            fbc.classList.remove("disabled");
+            fbc.classList.remove(CLASSES.DISABLED);
         }
     })
 
@@ -91,7 +93,8 @@ export function submitForm(e) {
 
     if(state.players.length === state.numberOfPlayers) {
         DOM_ELEMENTS.header.remove();
-        boardController.createBoard();  
+        boardController.createBoard(); 
+        Game.setTurn();
         console.log(state);
     } else {   
         if(error.flag) {
@@ -112,12 +115,3 @@ export function submitForm(e) {
         }
     }
 }
-
-//TODO & REFACTORING
-//5. stworzyć plik z klasami, które dodaje dynamicznie poprzez js w tym pliku!
-//6. drobne poprawki wizualne (np placeholder przechodzi nad input)"
-//8. Gdy osiągnie się zadeklarowaną liczbę graczy -> zablokować input (dodawanie gracza);
-//9. Dodać możliwość edycji nazwy gracza ??
-
-//BUGI
-// 1. Height "player__color" nie jest w rzeczywistości 100%;

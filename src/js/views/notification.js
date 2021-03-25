@@ -1,10 +1,11 @@
-import {DOM_ELEMENTS} from "../base";
+import {DOM_ELEMENTS} from "../utils/base";
+import { CLASSES } from "../utils/classes";
 
 const {header} = DOM_ELEMENTS;
 
 export function createNotification() {
     const notificationEl = document.createElement("div");
-    notificationEl.classList.add("notification");
+    notificationEl.classList.add(CLASSES.NOTIFICATION);
     notificationEl.setAttribute("id", "notification");
     header.appendChild(notificationEl);
 }

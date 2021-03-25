@@ -1,4 +1,4 @@
-import {DOM_ELEMENTS} from "../base";
+import {DOM_ELEMENTS} from "../utils/base";
 import {insertHTML} from "../utils/functions";
 
 export function addPlayerField(index, name, color) {

@@ -1,6 +1,8 @@
 import {fields} from "../utils/fields";
-import {DOM_ELEMENTS as domEl} from "../base";
-import state from "../state";
+import {DOM_ELEMENTS as domEl} from "../utils/base";
+import state from "../utils/state";
+
+import {CLASSES} from "../utils/classes";
 
 function filterFields(filterParam) {
     return fields.filter(({type}) => type === filterParam);
@@ -13,7 +15,7 @@ function attachPawns() {
     homeColorFields.forEach(f => {
         const extractedDataHome = f.dataset.field.split("-");
         if(playerColors.includes(extractedDataHome[1])) {
-            f.classList.add("pawn");
+            f.classList.add(CLASSES.PAWN);
             f.style.backgroundColor = extractedDataHome[0];
         }
     })
@@ -83,7 +85,7 @@ function createRegularFields(container) {
 
 export function createBoard() {
     const board = document.createElement("div");
-    board.classList.add("board");
+    board.classList.add(CLASSES.BOARD);
     domEl.gameContainer.appendChild(board);
 
     createStartFields(board);

@@ -1,4 +1,4 @@
-import state from "../state";
+import state from "../utils/state";
 
 export default class Player {
     constructor(name, color) {
@@ -10,7 +10,7 @@ export default class Player {
     createPawns() {
         const pawns = [];
         for(let i = 0; i < 4; i++) {
-            pawns.push({type: "home", poistion: `${this.color}-${i+1}`})
+            pawns.push({type: "home", position: `${this.color}-${i+1}`})
         }
         this.pawns = pawns;
     }

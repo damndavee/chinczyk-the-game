@@ -1,10 +1,5 @@
-import state from "../state";
-// 1. Znaleźc pion w state
-// 2. Zwrócić go
-// 3. Zmodyfikować jego pozycję
-// 4. Zapisać jego pozycję do state
-// 5. Usunąć klasę "pawn" z aktualnego pola
-// 6. Dodać klasę "pawn" do następnego pola
+import { CLASSES } from "../utils/classes";
+import state from "../utils/state";
 
 function findPawnInState(color, position) {
     return state.players.find(player => player.color === color).pawns.find(pawn => pawn.position === position);
@@ -26,6 +21,7 @@ function updatePawn(pawn, newPosition) {
 export function movePawn(e) {
     // const fields = [...document.querySelectorAll("[data-field]")];
     // fields.forEach(f => console.log(f.dataset.field));
+    // setTurn();
     const selectedPawn = e.target;
     
     const pawnFieldType = Object.values(e.target.dataset)[0].split("-")[0];
@@ -44,8 +40,8 @@ export function movePawn(e) {
 
     const startFieldDataset = startField.dataset.field;
     
-    selectedPawn.classList.remove("pawn");
-    startField.classList.add("pawn");
+    selectedPawn.classList.remove(CLASSES.PAWN);
+    startField.classList.add(CLASSES.PAWN);
     
     updatePawn(foundPawn, startFieldDataset);
 

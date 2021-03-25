@@ -1,6 +1,6 @@
 import "./scss/index.scss";
 import "../public/images/background.jpg";
-import {DOM_ELEMENTS as dom_el} from "./js/base";
+import {DOM_ELEMENTS as dom_el} from "./js/utils/base";
 
 import * as formController from "./js/controllers/form";
 
@@ -10,7 +10,7 @@ import * as notificationView from "./js/views/notification";
 
 // TESTING
 import * as boardController from "./js/controllers/board";
-import state from "./js/state";
+import state from "./js/utils/state";
 import * as gameController from "./js/controllers/game";
 // TESTING
 
@@ -18,7 +18,6 @@ document.addEventListener("DOMContentLoaded", () => {
     notificationView.createNotification();
     dom_el.header.remove();
     boardController.createBoard();
-    console.log(state);
 })
 
 dom_el.startGameBtn.addEventListener("click", e => {
