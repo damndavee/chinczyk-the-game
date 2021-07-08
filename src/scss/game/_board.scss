@@ -3,9 +3,9 @@
     grid-template-rows: repeat(11, 50px);
     grid-template-columns: repeat(11, 50px);
     grid-gap: 5px;
-    border: $black-border;
+    // border: $black-border;
     border-radius: $border-radius-regular;
-    box-shadow: 0 0 5px rgba(0,0,0, .3);
+    // box-shadow: 0 0 5px rgba(0,0,0, .3);
     padding: $p-medium;
 
     &__name-template {

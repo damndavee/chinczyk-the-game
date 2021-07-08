@@ -4,6 +4,7 @@ import {clearInput} from "../utils/functions";
 import {CLASSES} from "../utils/classes";
 
 import Player from "../models/Player";
+import Game from "../models/Game";
 
 import * as formView from "../views/form";
 import * as playerView from "../views/player";
@@ -12,9 +13,11 @@ import * as notificationController from "../controllers/notification";
 import * as notificationView from "../views/notification";
 
 import * as boardController from "../controllers/board";
-import { Game } from "../models/Game";
+import * as gameController from "../controllers/game";
 
 const {playersFields, playerNameInput, colorPickerButtons} = DOM_ELEMENTS;
+
+const game = new Game();
 
 export function changeAmountOfPlayers(value) {
     state.numberOfPlayers = +value;
@@ -94,8 +97,7 @@ export function submitForm(e) {
     if(state.players.length === state.numberOfPlayers) {
         DOM_ELEMENTS.header.remove();
         boardController.createBoard(); 
-        Game.setTurn();
-        console.log(state);
+        game.setTurn();
     } else {   
         if(error.flag) {
             notificationView.displayNotification(error.msg, "error");

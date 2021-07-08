@@ -15,8 +15,9 @@ function attachPawns() {
     homeColorFields.forEach(f => {
         const extractedDataHome = f.dataset.field.split("-");
         if(playerColors.includes(extractedDataHome[1])) {
-            f.classList.add(CLASSES.PAWN);
-            f.style.backgroundColor = extractedDataHome[0];
+            // f.classList.add(CLASSES.PAWN);
+            f.className += ` ${CLASSES.PAWN} ${CLASSES.PAWN}-${extractedDataHome[1]}`;
+            f.style.backgroundColor = extractedDataHome[1];
         }
     })
 }
@@ -86,7 +87,7 @@ function createRegularFields(container) {
 export function createBoard() {
     const board = document.createElement("div");
     board.classList.add(CLASSES.BOARD);
-    domEl.gameContainer.appendChild(board);
+    domEl.gameBoard.appendChild(board);
 
     createStartFields(board);
     createHomeFields(board);
