@@ -12,12 +12,21 @@ import * as notificationView from "./js/views/notification";
 import * as boardController from "./js/controllers/board";
 import state from "./js/utils/state";
 import * as gameController from "./js/controllers/game";
+import * as scoreboardView from "./js/views/scoreboard";
+const btn = document.querySelector(".roll");
+
+// btn.addEventListener('click', () => {
+//     gameController.displayDice();
+// })
 // TESTING
 
 document.addEventListener("DOMContentLoaded", () => {
+    // console.log(state)
     notificationView.createNotification();
-    dom_el.header.remove();
-    boardController.createBoard();
+    // dom_el.header.remove();
+    // boardController.createBoard();
+    // gameController.startGame();
+    // scoreboardView.createScoreboard();
 })
 
 dom_el.startGameBtn.addEventListener("click", e => {
@@ -61,5 +70,8 @@ dom_el.gameContainer.addEventListener("click", e => {
     if(e.target.classList.contains("pawn")) {
         gameController.movePawn(e);
     }
-    // console.log(e.target);
+
+    if(e.target.id === "dice-btn") {
+        gameController.rollDice();
+    }
 })

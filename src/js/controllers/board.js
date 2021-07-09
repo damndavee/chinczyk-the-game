@@ -84,6 +84,10 @@ function createRegularFields(container) {
     }
 }
 
+function createActionsPanel() {
+    domEl.gameActions.style.display = "block";
+}
+
 export function createBoard() {
     const board = document.createElement("div");
     board.classList.add(CLASSES.BOARD);
@@ -94,5 +98,6 @@ export function createBoard() {
     createMetaFields(board);
     createRegularFields(board);
     createNameTemplates(board);
+    createActionsPanel();
     attachPawns();
 }

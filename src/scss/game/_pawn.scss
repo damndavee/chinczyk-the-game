@@ -10,3 +10,27 @@
         z-index: 2;
     }
 }
+
+.pawn-active-player-blue {
+    &:hover {
+        background-color: lighten(blue, 30%) !important;
+    }
+}
+
+.pawn-active-player-yellow {
+    &:hover {
+        background-color: lighten(yellow, 30%) !important;
+    }
+}
+
+.pawn-active-player-green {
+    &:hover {
+        background-color: lighten(green, 30%) !important;
+    }
+}
+
+.pawn-active-player-red {
+    &:hover {
+        background-color: lighten(red, 30%) !important;
+    }
+}

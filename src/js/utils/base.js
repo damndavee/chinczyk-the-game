@@ -7,4 +7,6 @@ export const DOM_ELEMENTS = {
     playersFields: document.querySelector(".form__players-list").children,
     startGameBtn: document.querySelector("#start-game"),
     gameContainer: document.querySelector("#game"),
+    gameBoard: document.querySelector("#game-board"),
+    gameActions: document.querySelector("#game-actions"),
 }
