@@ -2,41 +2,6 @@ import {insertHTML} from "../utils/functions";
 import { DOM_ELEMENTS } from "../utils/base";
 import state from "../utils/state";
 
-export function loadScoreboard() {
-    const scoreboard = `
-    <div class="game__scoreboard" id="scoreboard">
-        ${state.players.map(player => {
-            return `<div class="game__player">
-            <div class="game__player-index">${player.name}</div>
-        </div>`
-        }).join("")}
-    </div>
-    `;
-
-    return scoreboard;
-}
-
-export function loadGameControls() {
-    const gameControls = `
-    <div class="game__controls">
-        <div class="game__controls-left-side">
-            <div class="game__controls-dice-container" id="dice-container"></div>
-        </div>
-
-        <div class="game__controls-right-side">
-            <div class="game__controls-current-player">
-                <p id="current-player">Current player: <span>Player</span></p>
-            </div>
-            <div class="game__controls-btn-container">
-                <button class="game__controls-btn" id="dice-btn">Roll Dice</button>
-            </div>
-        </div>
-    </div>
-    `;
-
-    return gameControls;
-}
-
 export function createScoreboard() {
     const scoreboard = `
     <div class="game__scoreboard" id="scoreboard">
@@ -56,7 +21,7 @@ export function createScoreboard() {
     <div class="game__controls">
         <div class="game__controls-left-side">
             <div class="game__controls-dice-container" id="dice-container">
-                <!-- <div class="game__controls-dice fas fa-dice-one" id="dice"></div> -->
+               <div class="game__controls-dice fas fa-dice" id="dice"></div>
             </div>
         </div>
 

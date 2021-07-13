@@ -8,12 +8,12 @@ import Game from "../models/Game";
 
 import * as formView from "../views/form";
 import * as playerView from "../views/player";
-
-import * as notificationController from "../controllers/notification";
 import * as notificationView from "../views/notification";
 import * as scoreboardView from "../views/scoreboard";
 
+import * as notificationController from "../controllers/notification";
 import * as boardController from "../controllers/board";
+import * as gameController from "../controllers/game";
 
 
 const {playersFields, playerNameInput, colorPickerButtons} = DOM_ELEMENTS;
@@ -96,10 +96,7 @@ export function submitForm(e) {
     const success = notificationController.successHandler("playerAdded");
 
     if(state.players.length === state.numberOfPlayers) {
-        DOM_ELEMENTS.header.remove();
-        boardController.createBoard();
-        game.setTurn();
-        scoreboardView.createScoreboard();
+        gameController.startGame();
     } else {   
         if(error.flag) {
             notificationView.displayNotification(error.msg, "error");
