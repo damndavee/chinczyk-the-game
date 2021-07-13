@@ -3,7 +3,6 @@ import state from "../utils/state";
 export default class Game {
     constructor() {
         this.tempNumber = 0;
-        this.rolledDice = 0;
     }
 
     setTurn() {
@@ -23,9 +22,4 @@ export default class Game {
             color: state.players[state.turn].color
         };
     }
-
-    getDice() {
-        this.rolledDice = Math.floor(Math.random() * 6 + 1);
-        state.rolledDice = this.rolledDice;
-    }    
 }
