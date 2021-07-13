@@ -3,30 +3,19 @@ import "../public/images/background.jpg";
 import {DOM_ELEMENTS as dom_el} from "./js/utils/base";
 
 import * as formController from "./js/controllers/form";
+import * as diceController from "./js/controllers/dice";
 
 import * as formView from "./js/views/form";
 import * as notificationView from "./js/views/notification";
 
 
 // TESTING
-import * as boardController from "./js/controllers/board";
 import state from "./js/utils/state";
 import * as gameController from "./js/controllers/game";
-import * as scoreboardView from "./js/views/scoreboard";
-const btn = document.querySelector(".roll");
-
-// btn.addEventListener('click', () => {
-//     gameController.displayDice();
-// })
-// TESTING
 
 document.addEventListener("DOMContentLoaded", () => {
-    // console.log(state)
     notificationView.createNotification();
-    // dom_el.header.remove();
-    // boardController.createBoard();
-    // gameController.startGame();
-    // scoreboardView.createScoreboard();
+    gameController.startGame();
 })
 
 dom_el.startGameBtn.addEventListener("click", e => {
@@ -72,6 +61,6 @@ dom_el.gameContainer.addEventListener("click", e => {
     }
 
     if(e.target.id === "dice-btn") {
-        gameController.rollDice();
+        diceController.rollDice();
     }
 })
