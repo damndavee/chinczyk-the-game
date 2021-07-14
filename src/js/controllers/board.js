@@ -15,7 +15,7 @@ function attachPawns() {
     homeColorFields.forEach(f => {
         const extractedDataHome = f.dataset.field.split("-");
         if(playerColors.includes(extractedDataHome[1])) {
-            f.innerHTML = `<i class="pawn pawn-${extractedDataHome[1]} fas fa-chess-pawn" style="color: ${extractedDataHome[1]}; z-index: 10;"></i>`
+            f.innerHTML = `<i class="pawn pawn-${extractedDataHome[1]} fas fa-chess-pawn" data-color="${extractedDataHome[1]}" style="color: ${extractedDataHome[1]}; z-index: 10;"></i>`
             // f.className += ` ${CLASSES.PAWN} ${CLASSES.PAWN}-${extractedDataHome[1]}`;
             // f.style.backgroundColor = extractedDataHome[1];
         }

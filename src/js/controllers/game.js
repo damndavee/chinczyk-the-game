@@ -31,9 +31,10 @@ function findPlayerInState(color) {
 function updatePawn(pawn, newPosition) {
     const type = newPosition.split("-")[0];
     const position = newPosition.split("-").slice(1).join("-");
-    const color = pawn.position.split("-")[0];
+    const color = pawn.color ? pawn.color : pawn.position.split("-")[0];
 
     const updatedPawn = {type, position};
+
 
     const playerIndex = state.players.findIndex(p => p.color === color);
     const oldPawnIndex = state.players.find(p => p.color === color).pawns.findIndex(p => p.position === pawn.position);
@@ -41,25 +42,84 @@ function updatePawn(pawn, newPosition) {
     state.players[playerIndex].pawns[oldPawnIndex] = updatedPawn;
 }
 
-export function goOutFromBase(clickedPawnParentPosition, clickedPawn, foundPawn) {
+function goOutFromBase(clickedPawnParentPosition, clickedPawn, foundPawn) {
     const startFields = [...document.querySelectorAll("[data-field]")].filter(f => f.dataset.field.includes("start"));
     const activePlayerColor = state.activePlayer.color;
     const activePlayerStartField = startFields.find(field => field.dataset.field.split("-")[1] === activePlayerColor);
     const activePlayerStartFieldDataset = activePlayerStartField.dataset.field;
 
     if (state.rolledDice === 6 && activePlayerStartField.innerHTML === "") {
-        Player.reduceNumberOfPawns("base", "-");
+        Player.reduceNumberOfPawns("home", "-");
         pawnController.removePawnFromBoard(clickedPawnParentPosition);
         pawnController.addPawnToBoard(activePlayerStartField, clickedPawn);
         updatePawn(foundPawn, activePlayerStartFieldDataset);
-        state.rolledDice = null;
         game.changeTurn();
         clearContainer(DOM_ELEMENTS.gameActions);
         scoreboardView.createScoreboard();
     }
 }
 
-function moveThroughBoard() {}
+function leaveStartField(clickedPawnParentPosition, clickedPawn, foundPawn) {
+    let startFieldCount;
+    const activePlayerColor = state.activePlayer.color;
+    const regularFields = [...document.querySelectorAll("[data-field]")].filter(f => f.dataset.field.includes("regular"));
+
+    switch (activePlayerColor) {
+        case "red": {
+            startFieldCount = 0;
+            break;
+        }
+
+        case "blue": {
+            startFieldCount = 9;
+            break;
+        }
+
+        case "yellow": {
+            startFieldCount = 18;
+            break;
+        }
+
+        case "green": {
+            startFieldCount = 27;
+            break;
+        }
+       
+        default:
+            break;
+    }
+
+    const newPosition = `regular-${startFieldCount + state.rolledDice}`;
+    const regularFieldToEnter = regularFields.find(field => field.dataset.field === newPosition);
+
+    pawnController.removePawnFromBoard(clickedPawnParentPosition);
+    updatePawn(foundPawn, newPosition);
+    pawnController.addPawnToBoard(regularFieldToEnter, clickedPawn);
+    game.changeTurn();
+    clearContainer(DOM_ELEMENTS.gameActions);
+    scoreboardView.createScoreboard();
+    
+}
+
+function moveThroughBoard(clickedPawnParentPosition, clickedPawn, foundPawn) {
+    const regularFields = [...document.querySelectorAll("[data-field]")].filter(f => f.dataset.field.includes("regular"));
+    const previousPosition = clickedPawnParentPosition.dataset.field;
+    const newPosition = `regular-${+(previousPosition.split("-")[1]) + state.rolledDice}`;
+
+    const regularFieldToEnter = regularFields.find(field => field.dataset.field === newPosition);
+
+    const pawn = {
+        ...foundPawn,
+        color: clickedPawn.dataset.color
+    }
+
+    pawnController.removePawnFromBoard(clickedPawnParentPosition);
+    updatePawn(pawn, newPosition);
+    pawnController.addPawnToBoard(regularFieldToEnter, clickedPawn);
+    game.changeTurn();
+    clearContainer(DOM_ELEMENTS.gameActions);
+    scoreboardView.createScoreboard();
+}
 
 function enterHomeFields() {}
 
@@ -68,29 +128,33 @@ export function movePawn(e) {
     const clickedPawnParentPosition = e.target.parentNode;
     const clickedPawnParentPositionType = e.target.parentNode.dataset.field.split("-")[0];
     const pawnFieldType = Object.values(clickedPawnParentPosition.dataset)[0].split("-")[0];
-    const pawnPosition = Object.values(clickedPawnParentPosition.dataset)[0].split("-").slice(1).join("-");
+    const splitedPawnParentPosition = Object.values(clickedPawnParentPosition.dataset)[0].split("-");
+    const pawnPosition = splitedPawnParentPosition.length === 3 ? splitedPawnParentPosition.slice(1).join("-") : splitedPawnParentPosition[1];
 
     const pawn = {
         type: pawnFieldType,
         position: pawnPosition,
-        color: pawnPosition.split("-")[0]
+        color: clickedPawn.dataset.color
     }
 
     const foundPawn = findPawnInState(pawn.color, pawn.position);
     const foundPlayer = findPlayerInState(pawn.color);
     
     if(foundPlayer.name === state.activePlayer.name) {
+        console.log("can move!");
         switch (clickedPawnParentPositionType) {
             case "home": {
                 goOutFromBase(clickedPawnParentPosition, clickedPawn, foundPawn);
                 break;
             }
 
-            case "regular": {
+            case "start": {
+                leaveStartField(clickedPawnParentPosition, clickedPawn, foundPawn);
                 break;
             }
 
-            case "start": {
+            case "regular": {
+                moveThroughBoard(clickedPawnParentPosition, clickedPawn, foundPawn);
                 break;
             }
 
@@ -102,6 +166,6 @@ export function movePawn(e) {
             default:
                 break;
         }
-        console.log(state);
+        // state.players.forEach(p => console.log(p));
     }
 }

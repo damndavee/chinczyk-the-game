@@ -11,7 +11,7 @@ export function createScoreboard() {
                         <div class="game__player-name">${player.name}</div>
                         <div class="game__player-pawns-container">
                             ${player.pawns.map(pawn => {
-                                return `<div class="game__player-pawn"><i class="fas fa-chess-pawn" style="color: ${player.color}"></i> ${pawn.type}-${pawn.position.split("-")[1]}</div>`
+                                return `<div class="game__player-pawn"><i class="fas fa-chess-pawn" style="color: ${player.color}"></i> ${pawn.type}-${pawn.position.split("-")[1] ? pawn.position.split("-")[1] : pawn.position}</div>`
                             }).join("")}
                         </div>
                     </div>`

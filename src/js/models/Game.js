@@ -15,6 +15,7 @@ export default class Game {
     }
     
     changeTurn() {
+        state.rolledDice = null;
         this.tempNumber++;
         state.turn = this.tempNumber % state.players.length;
         state.activePlayer = {

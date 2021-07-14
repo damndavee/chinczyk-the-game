@@ -27,11 +27,11 @@ export default class Player {
         const activePlayer = state.players.find(p => p.name === state.activePlayer.name);
         
         switch (type) {
-            case "home": {
+            case "meta": {
                 break;
             }
 
-            case "base": {
+            case "home": {
                 if(flag === "+") {
                     activePlayer.basePawns++;
                     activePlayer.boardPawns--;
