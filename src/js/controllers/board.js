@@ -10,14 +10,12 @@ function filterFields(filterParam) {
 
 function attachPawns() {
     const playerColors = state.players.map(p => p.color);
-    const homeColorFields = [...document.querySelectorAll("[data-field]")].filter(f => f.dataset.field.includes("home"));
+    const homeColorFields = [...document.querySelectorAll("[data-field]")].filter(f => f.dataset.type.includes("home"));
 
     homeColorFields.forEach(f => {
-        const extractedDataHome = f.dataset.field.split("-");
-        if(playerColors.includes(extractedDataHome[1])) {
-            f.innerHTML = `<i class="pawn pawn-${extractedDataHome[1]} fas fa-chess-pawn" data-color="${extractedDataHome[1]}" style="color: ${extractedDataHome[1]}; z-index: 10;"></i>`
-            // f.className += ` ${CLASSES.PAWN} ${CLASSES.PAWN}-${extractedDataHome[1]}`;
-            // f.style.backgroundColor = extractedDataHome[1];
+        const extractedDataColor = f.dataset.playerColor;
+        if (playerColors.includes(extractedDataColor)) {
+            f.innerHTML = `<i class="pawn pawn-${extractedDataColor} fas fa-chess-pawn" data-color="${extractedDataColor}" style="color: ${extractedDataColor}; z-index: 10;"></i>`
         }
     })
 }
@@ -39,10 +37,13 @@ function createNameTemplates(container) {
 function createStartFields(container) {
     const startFields = filterFields("start");
 
-    for (const {type, color} of startFields) {
+    for (const {type, color, position} of startFields) {
         const field = document.createElement("div");
         field.className = `field field-play ${color} ${color}-${type}`;
-        field.dataset.field = `start-${color}-1`
+        field.dataset.type = `start`
+        field.dataset.field = `${position}`;
+        field.dataset.playerColor = `${color}`;
+        field.dataset.playable = true;
 
         container.appendChild(field);
     }
@@ -53,8 +54,11 @@ function createHomeFields(container) {
 
     for (const {type, color, position} of homeFields) {
         const field = document.createElement("div");
-        field.className = `field ${color} ${color}-${type}`;
-        field.dataset.field = `home-${color}-${position}`;
+        field.className = `field ${color} ${color}-${type} ${color}-${type}-${position}`;
+        // field.dataset.field = `home-${color}-${position}`;
+        field.dataset.type = `home`
+        field.dataset.field = `${position}`
+        field.dataset.playerColor = `${color}`
 
         container.appendChild(field);
     }
@@ -65,9 +69,11 @@ function createMetaFields(container) {
 
     for (const {color, position} of metaFields) {
         const field = document.createElement("div");
-        field.className = `field ${color}`;
-        field.dataset.field = `meta-${color}-${position}`;
-
+        field.className = `field ${color} ${color}-meta-${position}`;
+        field.dataset.type = `meta`;
+        field.dataset.field = `${position}`;
+        field.dataset.playerColor = `${color}`;
+        
         container.appendChild(field);
     }
 }
@@ -78,7 +84,9 @@ function createRegularFields(container) {
     for (const {position} of regularFields) {
         const field = document.createElement("div");
         field.className = `field field-play field-${position}`;
-        field.dataset.field = `regular-${position}`;
+        field.dataset.type = `regular`;
+        field.dataset.field = `${position}`;
+        field.dataset.playable = true;
 
         container.appendChild(field);
     }

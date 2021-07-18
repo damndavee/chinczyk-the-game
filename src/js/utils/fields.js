@@ -106,22 +106,22 @@ export const fields = [
     {
         type: "start",
         color: "red",
-        positon: null
+        position: "1"
     },
     {
         type: "start",
         color: "blue",
-        positon: null
+        position: "11"
     },
     {
         type: "start",
         color: "yellow",
-        positon: null
+        position: "21"
     },
     {
         type: "start",
         color: "green",
-        positon: null
+        position: "31"
     },
     {
         type: "meta",
@@ -202,11 +202,6 @@ export const fields = [
         type: "meta",
         color: "green",
         position: "4"
-    },
-    {
-        type: "regular",
-        color: null,
-        position: "1"
     },
     {
         type: "regular",
@@ -256,11 +251,6 @@ export const fields = [
     {
         type: "regular",
         color: null,
-        position: "11"
-    },
-    {
-        type: "regular",
-        color: null,
         position: "12"
     },
     {
@@ -302,11 +292,6 @@ export const fields = [
         type: "regular",
         color: null,
         position: "20"
-    },
-    {
-        type: "regular",
-        color: null,
-        position: "21"
     },
     {
         type: "regular",
@@ -356,11 +341,6 @@ export const fields = [
     {
         type: "regular",
         color: null,
-        position: "31"
-    },
-    {
-        type: "regular",
-        color: null,
         position: "32"
     },
     {
@@ -382,5 +362,25 @@ export const fields = [
         type: "regular",
         color: null,
         position: "36"
+    },
+    {
+        type: "regular",
+        color: null,
+        position: "37"
+    },
+    {
+        type: "regular",
+        color: null,
+        position: "38"
+    },
+    {
+        type: "regular",
+        color: null,
+        position: "39"
+    },
+    {
+        type: "regular",
+        color: null,
+        position: "40"
     },
 ]
