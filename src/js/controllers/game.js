@@ -21,7 +21,6 @@ export function startGame() {
 }
 
 function findPawnInState(color, position) {
-    console.log(color, position);
     return state.players.find(player => player.color === color).pawns.find(pawn => pawn.position === position);
 }
 
@@ -30,8 +29,6 @@ function findPlayerInState(color) {
 }
 
 function updatePawn(pawn, newPosition, color) {
-
-    console.log(newPosition.dataset);
     const type = newPosition.dataset.type;
     const position = newPosition.dataset.field;
 
@@ -49,11 +46,10 @@ function goOutFromBase(clickedPawnParentPosition, clickedPawn, foundPawn) {
     const activePlayerStartField = startFields.find(field => field.dataset.playerColor === activePlayerColor);
 
     if (state.rolledDice === 6 && activePlayerStartField.innerHTML === "") {
+        // zastanowić się, czy nie wrzucić tego kodu do głównej metody movePawn (sprawdzić, czy to zadziała)
         Player.reduceNumberOfPawns("home", "-");
         pawnController.removePawnFromBoard(clickedPawnParentPosition);
         pawnController.addPawnToBoard(activePlayerStartField, clickedPawn);
-
-        // zastanowić się, czy nie wrzucić tego kodu do głównej metody movePawn (sprawdzić, czy to zadziała)
         updatePawn(foundPawn, activePlayerStartField, activePlayerColor);
         game.changeTurn();
         clearContainer(DOM_ELEMENTS.gameActions);
@@ -71,31 +67,45 @@ function leaveStartField(clickedPawnParentPosition, clickedPawn, foundPawn) {
 
     const regularFieldToEnter = regularFields.find(field => +field.dataset.field === newPosition);
 
-    pawnController.removePawnFromBoard(clickedPawnParentPosition);
-    updatePawn(foundPawn, regularFieldToEnter, activePlayerColor);
-    pawnController.addPawnToBoard(regularFieldToEnter, clickedPawn);
-    game.changeTurn();
-    clearContainer(DOM_ELEMENTS.gameActions);
-    scoreboardView.createScoreboard();
+    if(state.isDiceRolled) {
+        pawnController.removePawnFromBoard(clickedPawnParentPosition);
+        updatePawn(foundPawn, regularFieldToEnter, activePlayerColor);
+        pawnController.addPawnToBoard(regularFieldToEnter, clickedPawn);
+        game.changeTurn();
+        clearContainer(DOM_ELEMENTS.gameActions);
+        scoreboardView.createScoreboard();
+        state.isDiceRolled = false;
+    }    
 }
 
-// DO POPRAWY!!!!
 function moveThroughBoard(clickedPawnParentPosition, clickedPawn, foundPawn) {
     const activePlayerColor = state.activePlayer.color;
 
     const playableFields = [...document.querySelectorAll("[data-playable]")];
 
-    const previousPosition = clickedPawnParentPosition.dataset.field;
-    const newPosition = +previousPosition + state.rolledDice;
+    let newPosition;
 
+    const previousPosition = clickedPawnParentPosition.dataset.field;
+    const calculatedPosition = +previousPosition + state.rolledDice;
+
+    if(calculatedPosition > 40) {
+        newPosition = calculatedPosition - 40;
+    } else {
+        newPosition = calculatedPosition;
+    }
+    
     const playableFieldToEnter = playableFields.find(field => +field.dataset.field === newPosition);
 
-    pawnController.removePawnFromBoard(clickedPawnParentPosition);
-    updatePawn(foundPawn, playableFieldToEnter, activePlayerColor);
-    pawnController.addPawnToBoard(playableFieldToEnter, clickedPawn);
-    game.changeTurn();
-    clearContainer(DOM_ELEMENTS.gameActions);
-    scoreboardView.createScoreboard();
+    if(state.isDiceRolled) {
+        pawnController.removePawnFromBoard(clickedPawnParentPosition);
+        updatePawn(foundPawn, playableFieldToEnter, activePlayerColor);
+        pawnController.addPawnToBoard(playableFieldToEnter, clickedPawn);
+        game.changeTurn();
+        clearContainer(DOM_ELEMENTS.gameActions);
+        scoreboardView.createScoreboard();
+        state.isDiceRolled = false;
+    }
+
 }
 
 function enterHomeFields() {}
@@ -109,7 +119,7 @@ export function movePawn(e) {
     const pawn = {
         type: clickedPawnParentPositionType,
         position: clickedPawnParentFieldPosition,
-        color: state.activePlayer.color
+        color: clickedPawn.dataset.color
     }
 
     const foundPawn = findPawnInState(pawn.color, pawn.position);

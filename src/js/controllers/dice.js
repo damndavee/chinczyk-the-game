@@ -10,6 +10,7 @@ export function rollDice() {
     const rolledDice = state.dice[receivedDice];
     const dice = diceView.createDice(rolledDice);
     diceContainer.innerHTML = dice;
+    state.isDiceRolled = true;
     
     const pawns = document.querySelectorAll(`.pawn-${state.activePlayer.color}`);
     pawns.forEach(p => p.classList.add(`${CLASSES.PAWN_ACTIVE_PLAYER}-${state.activePlayer.color}`))

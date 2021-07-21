@@ -64,6 +64,7 @@ const state = {
         6: "six"
     },
     rolledDice: null,
+    isDiceRolled: false,
     activePlayer: {},
     pickedColor: '',
     turn: null,
