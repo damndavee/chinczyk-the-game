@@ -54,6 +54,7 @@ function goOutFromBase(clickedPawnParentPosition, clickedPawn, foundPawn) {
         game.changeTurn();
         clearContainer(DOM_ELEMENTS.gameActions);
         scoreboardView.createScoreboard();
+        state.isDiceRolled = false;
     }
 }
 
@@ -65,7 +66,7 @@ function leaveStartField(clickedPawnParentPosition, clickedPawn, foundPawn) {
     const previousPosition = clickedPawnParentPosition.dataset.field;
     const newPosition = +previousPosition + state.rolledDice;
 
-    const regularFieldToEnter = regularFields.find(field => +field.dataset.field === newPosition);
+    const regularFieldToEnter = regularFields.find(f => +f.dataset.field === newPosition);
 
     if(state.isDiceRolled) {
         pawnController.removePawnFromBoard(clickedPawnParentPosition);
@@ -78,37 +79,66 @@ function leaveStartField(clickedPawnParentPosition, clickedPawn, foundPawn) {
     }    
 }
 
-function moveThroughBoard(clickedPawnParentPosition, clickedPawn, foundPawn) {
+function moveThroughBoard(clickedPawnParentPosition, clickedPawn, foundPawn, foundPlayer) {
+    let newPosition;
+    let fieldToEnter;
+
     const activePlayerColor = state.activePlayer.color;
+    const activePlayerLastField = foundPlayer.lastField;
 
     const playableFields = [...document.querySelectorAll("[data-playable]")];
-
-    let newPosition;
-
+    const metaFields = [...document.querySelectorAll("[data-type]")].filter(f => f.dataset.type === "meta");
+    const activePlayerMetaFields = metaFields.filter(f => f.dataset.playerColor === activePlayerColor);
+    
     const previousPosition = clickedPawnParentPosition.dataset.field;
     const calculatedPosition = +previousPosition + state.rolledDice;
-
-    if(calculatedPosition > 40) {
-        newPosition = calculatedPosition - 40;
-    } else {
-        newPosition = calculatedPosition;
-    }
+    const calculatedHomePosition = calculatedPosition - activePlayerLastField;
     
-    const playableFieldToEnter = playableFields.find(field => +field.dataset.field === newPosition);
+    newPosition = calculatedPosition > 40 ? newPosition = calculatedPosition - 40 : newPosition = calculatedPosition;
+    
+    if(calculatedPosition > activePlayerLastField && previousPosition <= activePlayerLastField && calculatedHomePosition < 5) {
+        fieldToEnter = activePlayerMetaFields.find(f => +f.dataset.field === calculatedHomePosition);
+    } else {
+        fieldToEnter = playableFields.find(f => +f.dataset.field === newPosition);
+    }
 
     if(state.isDiceRolled) {
         pawnController.removePawnFromBoard(clickedPawnParentPosition);
-        updatePawn(foundPawn, playableFieldToEnter, activePlayerColor);
-        pawnController.addPawnToBoard(playableFieldToEnter, clickedPawn);
+        updatePawn(foundPawn, fieldToEnter, activePlayerColor);
+        pawnController.addPawnToBoard(fieldToEnter, clickedPawn);
+        game.changeTurn();
+        clearContainer(DOM_ELEMENTS.gameActions);
+        scoreboardView.createScoreboard();
+        state.isDiceRolled = false;
+    }
+}
+
+function enterHomeFields(clickedPawnParentPosition, clickedPawn, foundPawn) {
+    const activePlayerColor = state.activePlayer.color;
+
+    const metaFields = [...document.querySelectorAll("[data-type]")].filter(f => f.dataset.type === "meta");
+    const activePlayerMetaFields = metaFields.filter(f => f.dataset.playerColor === activePlayerColor);
+
+    const previousPosition = clickedPawnParentPosition.dataset.field;
+
+    const newPosition = +previousPosition + state.rolledDice;
+
+    if(newPosition > 4) {
+        // game.changeTurn();
+        console.log("CANNOT ENTER FIELD!");
+    } else {
+        const fieldToEnter = activePlayerMetaFields.find(f => +f.dataset.field === newPosition);
+        pawnController.removePawnFromBoard(clickedPawnParentPosition);
+        updatePawn(foundPawn, fieldToEnter, activePlayerColor);
+        pawnController.addPawnToBoard(fieldToEnter, clickedPawn);
         game.changeTurn();
         clearContainer(DOM_ELEMENTS.gameActions);
         scoreboardView.createScoreboard();
         state.isDiceRolled = false;
     }
 
-}
 
-function enterHomeFields() {}
+}
 
 export function movePawn(e) { 
     const clickedPawn = e.target;
@@ -138,11 +168,12 @@ export function movePawn(e) {
             }
 
             case "regular": {
-                moveThroughBoard(clickedPawnParent, clickedPawn, foundPawn);
+                moveThroughBoard(clickedPawnParent, clickedPawn, foundPawn, foundPlayer);
                 break;
             }
 
             case "meta": {
+                enterHomeFields(clickedPawnParent, clickedPawn, foundPawn);
                 break;
             }
 
@@ -150,6 +181,5 @@ export function movePawn(e) {
             default:
                 break;
         }
-        // state.players.forEach(p => console.log(p));
     }
 }

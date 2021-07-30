@@ -20,6 +20,37 @@ const {playersFields, playerNameInput, colorPickerButtons} = DOM_ELEMENTS;
 
 const game = new Game();
 
+function addFieldToEnterHome(color) {
+    let field;
+    
+    switch (color) {
+        case "red": {
+            field = 40;
+            break;
+        }
+
+        case "green": {
+            field = 30;
+            break;
+        }
+    
+        case "yellow": {
+            field = 20;
+            break;
+        }
+    
+        case "blue": {
+            field = 10;
+            break;
+        }
+    
+        default:
+            break;
+    }
+
+    return field;
+}
+
 export function changeAmountOfPlayers(value) {
     state.numberOfPlayers = +value;
 }
@@ -101,7 +132,8 @@ export function submitForm(e) {
         if(error.flag) {
             notificationView.displayNotification(error.msg, "error");
         } else {
-            const player = new Player(playerNameInput.value, state.pickedColor.dataset.color);
+            const fieldToEnterHome = addFieldToEnterHome(state.pickedColor.dataset.color);
+            const player = new Player(playerNameInput.value, state.pickedColor.dataset.color, fieldToEnterHome);
             
             disablePickedButton();
 

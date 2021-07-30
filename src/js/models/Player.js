@@ -1,9 +1,10 @@
 import state from "../utils/state";
 
 export default class Player {
-    constructor(name, color) {
+    constructor(name, color, fieldToEnterHome) {
         this.name = name;
         this.color = color;
+        this.fieldToEnterHome = fieldToEnterHome;
         this.boardPawns = 0;
         this.homePawns = 0;
         this.basePawns = 4;
@@ -28,10 +29,12 @@ export default class Player {
         
         switch (type) {
             case "meta": {
+                activePlayer.boardPawns--;
+                activePlayer.homePawns++;
                 break;
             }
 
-            case "home": {
+            case "base": {
                 if(flag === "+") {
                     activePlayer.basePawns++;
                     activePlayer.boardPawns--;
