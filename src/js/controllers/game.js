@@ -46,7 +46,6 @@ function goOutFromBase(clickedPawnParentPosition, clickedPawn, foundPawn) {
     const activePlayerStartField = startFields.find(field => field.dataset.playerColor === activePlayerColor);
 
     if (state.rolledDice === 6 && activePlayerStartField.innerHTML === "") {
-        // zastanowić się, czy nie wrzucić tego kodu do głównej metody movePawn (sprawdzić, czy to zadziała)
         Player.reduceNumberOfPawns("home", "-");
         pawnController.removePawnFromBoard(clickedPawnParentPosition);
         pawnController.addPawnToBoard(activePlayerStartField, clickedPawn);
@@ -102,6 +101,12 @@ function moveThroughBoard(clickedPawnParentPosition, clickedPawn, foundPawn, fou
         fieldToEnter = playableFields.find(f => +f.dataset.field === newPosition);
     }
 
+    const isEmpty = checkIfFieldIsEmpty(fieldToEnter);
+    
+    if(!isEmpty) {
+        takeoverRegularField(fieldToEnter, foundPawn);
+    }
+
     if(state.isDiceRolled) {
         pawnController.removePawnFromBoard(clickedPawnParentPosition);
         updatePawn(foundPawn, fieldToEnter, activePlayerColor);
@@ -128,6 +133,7 @@ function enterHomeFields(clickedPawnParentPosition, clickedPawn, foundPawn) {
         console.log("CANNOT ENTER FIELD!");
     } else {
         const fieldToEnter = activePlayerMetaFields.find(f => +f.dataset.field === newPosition);
+
         pawnController.removePawnFromBoard(clickedPawnParentPosition);
         updatePawn(foundPawn, fieldToEnter, activePlayerColor);
         pawnController.addPawnToBoard(fieldToEnter, clickedPawn);
@@ -136,8 +142,34 @@ function enterHomeFields(clickedPawnParentPosition, clickedPawn, foundPawn) {
         scoreboardView.createScoreboard();
         state.isDiceRolled = false;
     }
+}
 
+function checkIfFieldIsEmpty(fieldToEnter) {
+    return fieldToEnter.innerHTML === "" ? true : false;
+}
 
+function takeoverRegularField(fieldToEnter, foundPawn) {
+    const pawnOnField = fieldToEnter.childNodes[0];
+    const playerPawnColor = pawnOnField.dataset.color;
+
+    const baseFields = [...document.querySelectorAll("[data-type")].filter(f => f.dataset.type.includes("home"));
+    const activePlayerBaseFields = baseFields.filter(field => field.dataset.playerColor === playerPawnColor);
+
+    activePlayerBaseFields.forEach((field, index) => {
+        if(field.innerHTML === "") {
+
+            const newPawn = {
+                type: "home",
+                position: (index+1).toString(),
+                color: playerPawnColor
+            }
+
+            pawnController.removePawnFromBoard(fieldToEnter);
+            state.players.find(p => p.color === playerPawnColor).pawns[index] = newPawn;
+            pawnController.addPawnToBoard(field, pawnOnField); 
+            return;
+        }
+    })
 }
 
 export function movePawn(e) { 
@@ -182,4 +214,6 @@ export function movePawn(e) {
                 break;
         }
     }
+
+    console.log(state.players);
 }
