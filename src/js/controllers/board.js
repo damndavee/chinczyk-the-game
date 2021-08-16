@@ -12,10 +12,10 @@ function attachPawns() {
     const playerColors = state.players.map(p => p.color);
     const homeColorFields = [...document.querySelectorAll("[data-field]")].filter(f => f.dataset.type.includes("home"));
 
-    homeColorFields.forEach(f => {
+    homeColorFields.forEach((f, index) => {
         const extractedDataColor = f.dataset.playerColor;
         if (playerColors.includes(extractedDataColor)) {
-            f.innerHTML = `<i class="pawn pawn-${extractedDataColor} fas fa-chess-pawn" data-color="${extractedDataColor}" style="color: ${extractedDataColor}; z-index: 10;"></i>`
+            f.innerHTML = `<i class="pawn pawn-${extractedDataColor} fas fa-chess-pawn" data-index="${f.dataset.index}" data-color="${extractedDataColor}" style="color: ${extractedDataColor}; z-index: 10;"></i>`
         }
     })
 }
@@ -56,9 +56,10 @@ function createHomeFields(container) {
         const field = document.createElement("div");
         field.className = `field ${color} ${color}-${type} ${color}-${type}-${position}`;
         // field.dataset.field = `home-${color}-${position}`;
-        field.dataset.type = `home`
-        field.dataset.field = `${position}`
-        field.dataset.playerColor = `${color}`
+        field.dataset.type = `home`;
+        field.dataset.field = `${position}`;
+        field.dataset.playerColor = `${color}`;
+        field.dataset.index = `${position}`;
 
         container.appendChild(field);
     }

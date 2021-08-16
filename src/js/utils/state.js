@@ -9,10 +9,10 @@ const state = {
             basePawns: 4,
             lastField: 40,
             pawns: [
-                {type: "home", position: "1", color: "red"},
-                {type: "home", position: "2", color: "red"},
-                {type: "home", position: "3", color: "red"},
-                {type: "home", position: "4", color: "red"},
+                {type: "home", position: "1", color: "red", index: 1},
+                {type: "home", position: "2", color: "red", index: 2},
+                {type: "home", position: "3", color: "red", index: 3},
+                {type: "home", position: "4", color: "red", index: 4},
             ]
         },
         {
@@ -23,10 +23,10 @@ const state = {
             basePawns: 4,
             lastField: 10,
             pawns: [
-                {type: "home", position: "1", color: "blue"},
-                {type: "home", position: "2", color: "blue"},
-                {type: "home", position: "3", color: "blue"},
-                {type: "home", position: "4", color: "blue"},
+                {type: "home", position: "1", color: "blue", index: 1},
+                {type: "home", position: "2", color: "blue", index: 2},
+                {type: "home", position: "3", color: "blue", index: 3},
+                {type: "home", position: "4", color: "blue", index: 4},
             ]           
         },
         // {
