@@ -22,5 +22,7 @@ export default class Game {
             name: state.players[state.turn].name,
             color: state.players[state.turn].color
         };
+        state.isDiceRolled = false;
+        state.canPlayerMove = false;
     }
 }

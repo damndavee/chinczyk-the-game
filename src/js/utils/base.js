@@ -10,3 +10,15 @@ export const DOM_ELEMENTS = {
     gameBoard: document.querySelector("#game-board"),
     gameActions: document.querySelector("#game-actions"),
 }
+
+const getBoardFields = () => {
+    return {
+        baseFields: [...document.querySelectorAll("[data-field]")].filter(f => f.dataset.type.includes("home")),
+        startFields: [...document.querySelectorAll("[data-field]")].filter(f => f.dataset.type.includes("start")),
+        regularFields: [...document.querySelectorAll("[data-field]")].filter(f => f.dataset.type.includes("regular")),
+        playableFields: [...document.querySelectorAll("[data-playable]")],
+        metaFields: [...document.querySelectorAll("[data-field]")].filter(f => f.dataset.type.includes("meta"))
+    }
+}
+
+export const getFilteredBoardFields = fieldsTofind => getBoardFields()[fieldsTofind];

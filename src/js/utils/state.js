@@ -70,6 +70,7 @@ const state = {
     activePlayer: {},
     pickedColor: '',
     turn: null,
+    canPlayerMove: false,
 }
 
 export default state;

@@ -1,3 +1,5 @@
+import state from "./state";
+
 export function clearContainer(container) {
     container.innerHTML = "";
 }
@@ -8,6 +10,22 @@ export function clearInput(input) {
 
 export function insertHTML(parent, child, position = "beforeend") {
 	parent.insertAdjacentHTML(position, child);
+}
+
+export function checkIfFieldIsEmpty(fieldToEnter) {
+    return fieldToEnter.innerHTML === "" ? true : false;
+}
+
+export function checkIfTheSameColorPawn(pawnOnField, foundPawn) {
+    return pawnOnField.dataset.color !== foundPawn.color;
+} 
+
+export function findPawnInState(pawn) {
+    return state.players.find(player => player.color === pawn.color).pawns.find(p => p.index === pawn.index);
+}
+
+export function findPlayerInState(color) {
+    return state.players.find(player => player.color === color);
 }
 
 //provided by:

@@ -1,15 +1,31 @@
-import { CLASSES } from "../utils/classes";
 import state from "../utils/state";
 
-export function removePawnFromBoard(field) {
+function updatePawn(pawn, newPosition, color) {
+    const type = newPosition.dataset.type;
+    const position = newPosition.dataset.field;
+    const index = pawn.index;
+
+    const updatedPawn = {type, position, color, index};
+
+    const playerIndex = state.players.findIndex(p => p.color === color);
+    const oldPawnIndex = state.players.find(p => p.color === color).pawns.findIndex(p => p.index === pawn.index);
+    
+    state.players[playerIndex].pawns[oldPawnIndex] = updatedPawn;
+}
+
+function removePawnFromBoard(field) {
     const fieldChildren = [...field.children];
 
     fieldChildren.length === 1 ? field.innerHTML = "" : fieldChildren.splice(0,1);
 
-    // field.classList.remove(CLASSES.PAWN, CLASSES.PAWN_ACTIVE_PLAYER + `-${state.activePlayer.color}`, CLASSES.PAWN + `-${state.activePlayer.color}`);
 }
 
-export function addPawnToBoard(field, pawn) {
+function addPawnToBoard(field, pawn) {
     field.append(pawn);
-    // field.className += ` ${CLASSES.PAWN} ${CLASSES.PAWN}-${foundPlayer.color}`;
+}
+
+export function updatePawnStateOnBoard(parentPosition, fieldToEnter, foundPawn, clickedPawn) {
+    removePawnFromBoard(parentPosition);
+    updatePawn(foundPawn, fieldToEnter, state.activePlayer.color);
+    addPawnToBoard(fieldToEnter, clickedPawn);
 }

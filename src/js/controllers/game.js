@@ -7,8 +7,9 @@ import * as boardController from "../controllers/board";
 import * as scoreboardView from "../views/scoreboard";
 
 import Player from "../models/Player";
-import { clearContainer } from "../utils/functions";
-import { DOM_ELEMENTS } from "../utils/base";
+
+import { clearContainer, checkIfFieldIsEmpty, checkIfTheSameColorPawn, findPawnInState, findPlayerInState } from "../utils/functions";
+import { DOM_ELEMENTS, getFilteredBoardFields } from "../utils/base";
 
 const game = new Game();
 
@@ -20,54 +21,26 @@ export function startGame() {
     scoreboardView.createScoreboard();
 }
 
-function findPawnInState(pawn) {
-    return state.players.find(player => player.color === pawn.color).pawns.find(p => p.index === pawn.index);
-}
-
-function findPlayerInState(color) {
-    return state.players.find(player => player.color === color);
-}
-
-function updatePawn(pawn, newPosition, color) {
-    const type = newPosition.dataset.type;
-    const position = newPosition.dataset.field;
-    const index = pawn.index;
-
-    const updatedPawn = {type, position, color, index};
-
-    const playerIndex = state.players.findIndex(p => p.color === color);
-    const oldPawnIndex = state.players.find(p => p.color === color).pawns.findIndex(p => p.index === pawn.index);
-    
-    state.players[playerIndex].pawns[oldPawnIndex] = updatedPawn;
-}
-
-function goOutFromBase(clickedPawnParentPosition, clickedPawn, foundPawn) {
-    const startFields = [...document.querySelectorAll("[data-field]")].filter(f => f.dataset.type.includes("start"));
+function goOutFromBase(foundPawn) {
+    const startFields = getFilteredBoardFields("startFields");
     const activePlayerColor = state.activePlayer.color;
     const activePlayerStartField = startFields.find(field => field.dataset.playerColor === activePlayerColor);
 
     const isEmpty = checkIfFieldIsEmpty(activePlayerStartField);
     
     if(!isEmpty) {
+        state.isTakeover = true;
         takeoverRegularField(activePlayerStartField, foundPawn);
     }
 
     if (state.rolledDice === 6) {
-        Player.reduceNumberOfPawns("home", "-");
-        pawnController.removePawnFromBoard(clickedPawnParentPosition);
-        updatePawn(foundPawn, activePlayerStartField, activePlayerColor);
-        pawnController.addPawnToBoard(activePlayerStartField, clickedPawn);
-        game.changeTurn();
-        clearContainer(DOM_ELEMENTS.gameActions);
-        scoreboardView.createScoreboard();
-        state.isDiceRolled = false;
+        state.canPlayerMove = true;
+        return activePlayerStartField;
     }
 }
 
-function leaveStartField(clickedPawnParentPosition, clickedPawn, foundPawn) {
-    const activePlayerColor = state.activePlayer.color;
-
-    const regularFields = [...document.querySelectorAll("[data-field]")].filter(f => f.dataset.type.includes("regular"));
+function leaveStartField(clickedPawnParentPosition, foundPawn) {
+    const regularFields = getFilteredBoardFields("regularFields");
 
     const previousPosition = clickedPawnParentPosition.dataset.field;
     const newPosition = +previousPosition + state.rolledDice;
@@ -77,29 +50,25 @@ function leaveStartField(clickedPawnParentPosition, clickedPawn, foundPawn) {
     const isEmpty = checkIfFieldIsEmpty(regularFieldToEnter);
     
     if(!isEmpty) {
+        state.isTakeover = true;
         takeoverRegularField(regularFieldToEnter, foundPawn);
     }
-
+    
     if(state.isDiceRolled) {
-        pawnController.removePawnFromBoard(clickedPawnParentPosition);
-        updatePawn(foundPawn, regularFieldToEnter, activePlayerColor);
-        pawnController.addPawnToBoard(regularFieldToEnter, clickedPawn);
-        game.changeTurn();
-        clearContainer(DOM_ELEMENTS.gameActions);
-        scoreboardView.createScoreboard();
-        state.isDiceRolled = false;
-    }    
+        state.canPlayerMove = true;
+        return regularFieldToEnter;
+    }
 }
 
-function moveThroughBoard(clickedPawnParentPosition, clickedPawn, foundPawn, foundPlayer) {
+function moveThroughBoard(clickedPawnParentPosition, foundPawn, foundPlayer) {
     let newPosition;
     let fieldToEnter;
 
     const activePlayerColor = state.activePlayer.color;
     const activePlayerLastField = foundPlayer.lastField;
 
-    const playableFields = [...document.querySelectorAll("[data-playable]")];
-    const metaFields = [...document.querySelectorAll("[data-type]")].filter(f => f.dataset.type === "meta");
+    const playableFields = getFilteredBoardFields("playableFields");
+    const metaFields = getFilteredBoardFields("metaFields");
     const activePlayerMetaFields = metaFields.filter(f => f.dataset.playerColor === activePlayerColor);
     
     const previousPosition = clickedPawnParentPosition.dataset.field;
@@ -117,65 +86,56 @@ function moveThroughBoard(clickedPawnParentPosition, clickedPawn, foundPawn, fou
     const isEmpty = checkIfFieldIsEmpty(fieldToEnter);
     
     if(!isEmpty) {
+        state.isTakeover = true;
         takeoverRegularField(fieldToEnter, foundPawn);
     }
 
     if(state.isDiceRolled) {
-        pawnController.removePawnFromBoard(clickedPawnParentPosition);
-        updatePawn(foundPawn, fieldToEnter, activePlayerColor);
-        pawnController.addPawnToBoard(fieldToEnter, clickedPawn);
-        game.changeTurn();
-        clearContainer(DOM_ELEMENTS.gameActions);
-        scoreboardView.createScoreboard();
-        state.isDiceRolled = false;
+        state.canPlayerMove = true;
+        return fieldToEnter;
     }
 }
 
-function enterHomeFields(clickedPawnParentPosition, clickedPawn, foundPawn) {
+function enterHomeFields() {
+    // ...
+}
+
+function noMovesHandler() {
+    // ...
+}
+
+function moveThroughHomeFields(clickedPawnParentPosition) {
     const activePlayerColor = state.activePlayer.color;
 
-    const metaFields = [...document.querySelectorAll("[data-type]")].filter(f => f.dataset.type === "meta");
+    const metaFields = getFilteredBoardFields("metaFields");
     const activePlayerMetaFields = metaFields.filter(f => f.dataset.playerColor === activePlayerColor);
 
     const previousPosition = clickedPawnParentPosition.dataset.field;
 
     const newPosition = +previousPosition + state.rolledDice;
 
-    const isEmpty = checkIfFieldIsEmpty(fieldToEnter);
-    
-    if(!isEmpty) {
-        takeoverRegularField(fieldToEnter, foundPawn);
-    }
-
     if(newPosition > 4) {
-        // game.changeTurn();
-        console.log("CANNOT ENTER FIELD!");
-    } else {
-        const fieldToEnter = activePlayerMetaFields.find(f => +f.dataset.field === newPosition);
-
-        pawnController.removePawnFromBoard(clickedPawnParentPosition);
-        updatePawn(foundPawn, fieldToEnter, activePlayerColor);
-        pawnController.addPawnToBoard(fieldToEnter, clickedPawn);
         game.changeTurn();
         clearContainer(DOM_ELEMENTS.gameActions);
         scoreboardView.createScoreboard();
-        state.isDiceRolled = false;
+    } else {
+        const fieldToEnter = activePlayerMetaFields.find(f => +f.dataset.field === newPosition);
+
+        const isEmpty = checkIfFieldIsEmpty(fieldToEnter);
+
+        console.log(state);
+        if(isEmpty && state.isDiceRolled) {
+            state.canPlayerMove = true;
+            return fieldToEnter;
+        }
     }
 }
-
-function checkIfFieldIsEmpty(fieldToEnter) {
-    return fieldToEnter.innerHTML === "" ? true : false;
-}
-
-function checkIfTheSameColorPawn(pawnOnField, foundPawn) {
-    return pawnOnField.dataset.color !== foundPawn.color;
-} 
 
 function takeoverRegularField(fieldToEnter, foundPawn) {
     const pawnOnField = fieldToEnter.childNodes[0];
     const playerPawnColor = pawnOnField.dataset.color;
 
-    const baseFields = [...document.querySelectorAll("[data-type")].filter(f => f.dataset.type.includes("home"));
+    const baseFields = getFilteredBoardFields("baseFields");
     const activePlayerBaseFields = baseFields.filter(field => field.dataset.playerColor === playerPawnColor);
 
     const takeover = checkIfTheSameColorPawn(pawnOnField, foundPawn);
@@ -190,9 +150,8 @@ function takeoverRegularField(fieldToEnter, foundPawn) {
             index: +baseFieldToEnter.dataset.index
         }
 
-        pawnController.removePawnFromBoard(fieldToEnter);
+        pawnController.updatePawnStateOnBoard(fieldToEnter, baseFieldToEnter, foundPawn, pawnOnField);
         state.players.find(p => p.color === playerPawnColor).pawns[+newPawn.index - 1] = newPawn;
-        pawnController.addPawnToBoard(baseFieldToEnter, pawnOnField);
     }
 }
 
@@ -212,35 +171,43 @@ export function movePawn(e) {
     const foundPawn = findPawnInState(pawn);
 
     const foundPlayer = findPlayerInState(pawn.color);
+
+    let fieldToEnter;
     
-    if(foundPlayer.name === state.activePlayer.name) {
+    if(foundPlayer.name === state.activePlayer.name && state.isDiceRolled) {
         switch (clickedPawnParentPositionType) {
             case "home": {
-                goOutFromBase(clickedPawnParent, clickedPawn, foundPawn);
+                fieldToEnter = goOutFromBase(foundPawn);
                 break;
             }
 
             case "start": {
-                leaveStartField(clickedPawnParent, clickedPawn, foundPawn);
+                fieldToEnter = leaveStartField(clickedPawnParent, foundPawn);
                 break;
             }
 
             case "regular": {
-                moveThroughBoard(clickedPawnParent, clickedPawn, foundPawn, foundPlayer);
+                fieldToEnter = moveThroughBoard(clickedPawnParent, foundPawn, foundPlayer);
                 break;
             }
 
             case "meta": {
-                enterHomeFields(clickedPawnParent, clickedPawn, foundPawn);
+                fieldToEnter = moveThroughHomeFields(clickedPawnParent, clickedPawn, foundPawn);
                 break;
             }
-
 
             default:
                 break;
         }
-    }
 
-    // state.players.forEach(p => console.log(p.pawns));
-    // console.log("-----");
+        if(state.canPlayerMove) {
+            Player.reduceNumberOfPawns("home", "-");
+            
+            pawnController.updatePawnStateOnBoard(clickedPawnParent, fieldToEnter, foundPawn, clickedPawn);
+            
+            game.changeTurn();
+            clearContainer(DOM_ELEMENTS.gameActions);
+            scoreboardView.createScoreboard();
+        }
+    }
 }
