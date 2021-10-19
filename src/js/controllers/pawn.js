@@ -17,12 +17,42 @@ function removePawnFromBoard(field) {
     const fieldChildren = [...field.children];
 
     fieldChildren.length === 1 ? field.innerHTML = "" : fieldChildren.splice(0,1);
-
 }
 
 function addPawnToBoard(field, pawn) {
     field.append(pawn);
 }
+
+export function reduceNumberOfPawns(player, fieldType, flag) {
+    switch (fieldType) {
+        case "base": {
+            if(flag === "+") {
+                player.basePawns++;
+                player.boardPawns--;
+            } else {
+                player.basePawns--;
+                player.boardPawns++;
+            }
+            break;
+        }
+
+        case "meta": {
+            if(flag === "+") {
+                player.boardPawns--;
+                player.homePawns++;
+            }
+            break;
+        }
+
+        case "takeover": {
+
+            break;
+        }
+            
+        default:
+            break;
+    }
+} 
 
 export function updatePawnStateOnBoard(parentPosition, fieldToEnter, foundPawn, clickedPawn) {
     removePawnFromBoard(parentPosition);

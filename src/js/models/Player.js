@@ -23,37 +23,6 @@ export default class Player {
         this.createPawns();
         state.players.push({...this, pawns: this.pawns});
     }
-    
-    static reduceNumberOfPawns(type, flag) {
-        const activePlayer = state.players.find(p => p.name === state.activePlayer.name);
-        
-        switch (type) {
-            case "meta": {
-                activePlayer.boardPawns--;
-                activePlayer.homePawns++;
-                break;
-            }
-
-            case "base": {
-                if(flag === "+") {
-                    activePlayer.basePawns++;
-                    activePlayer.boardPawns--;
-                } else {
-                    activePlayer.basePawns--;
-                    activePlayer.boardPawns++;
-                } 
-                break;
-            }
-
-            case "board": {
-                
-                break;
-            }
-                
-            default:
-                break;
-        }
-    } 
 
     static removePlayer(name) {
         state.players = state.players.filter(i => i.name !== name);

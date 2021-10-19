@@ -21,7 +21,7 @@ export function startGame() {
     scoreboardView.createScoreboard();
 }
 
-function goOutFromBase(foundPawn) {
+function goOutFromBase(foundPawn, foundPlayer) {
     const startFields = getFilteredBoardFields("startFields");
     const activePlayerColor = state.activePlayer.color;
     const activePlayerStartField = startFields.find(field => field.dataset.playerColor === activePlayerColor);
@@ -34,6 +34,7 @@ function goOutFromBase(foundPawn) {
     }
 
     if (state.rolledDice === 6) {
+        pawnController.reduceNumberOfPawns(foundPlayer, "base", "-");
         state.canPlayerMove = true;
         return activePlayerStartField;
     }
@@ -77,31 +78,67 @@ function moveThroughBoard(clickedPawnParentPosition, foundPawn, foundPlayer) {
     
     newPosition = calculatedPosition > 40 ? newPosition = calculatedPosition - 40 : newPosition = calculatedPosition;
     
-    if(calculatedPosition > activePlayerLastField && previousPosition <= activePlayerLastField && calculatedHomePosition < 5) {
-        fieldToEnter = activePlayerMetaFields.find(f => +f.dataset.field === calculatedHomePosition);
+    if(calculatedPosition > activePlayerLastField && previousPosition <= activePlayerLastField && calculatedHomePosition < 7) {
+        fieldToEnter = enterHomeFields(calculatedHomePosition, activePlayerMetaFields, foundPlayer);
     } else {
         fieldToEnter = playableFields.find(f => +f.dataset.field === newPosition);
     }
 
-    const isEmpty = checkIfFieldIsEmpty(fieldToEnter);
+    const isEmpty = fieldToEnter != undefined ? checkIfFieldIsEmpty(fieldToEnter) : true;
     
     if(!isEmpty) {
         state.isTakeover = true;
         takeoverRegularField(fieldToEnter, foundPawn);
     }
 
-    if(state.isDiceRolled) {
+    if(state.isDiceRolled && fieldToEnter != undefined) {
         state.canPlayerMove = true;
         return fieldToEnter;
     }
 }
 
-function enterHomeFields() {
-    // ...
+function enterHomeFields(homePosition, metaFields, foundPlayer) {
+    if(homePosition > 0 && homePosition < 5) {
+        pawnController.reduceNumberOfPawns(foundPlayer, "meta", "+");
+        return metaFields.find(f => +f.dataset.field === homePosition);
+    } else {
+        noMovesHandler("overreach");
+    }
 }
 
-function noMovesHandler() {
-    // ...
+function noMovesHandler(situation) {
+    //const activePlayer = state.players.find(p => p.name === activePlayer.name);
+
+    switch(situation) {
+        case "overreach": {
+            // 1. overreach - nie można tym pionkiem wejść na metę
+            // wyświetlić komunikat o niemożliwym do wykonania ruchu -> wybierz inny pion
+            console.log("YOU CANNOT ENTER THIS FIELD!");
+            break;
+        }
+
+        case "noPawnsOnBoard": {
+            // 1. pobrać aktualnego gracza ze state'u
+            // 2. zobaczyć, ile posiada pionów na planszy
+            // 3. jeśli nie posiada żadnych - 3 rzuty kostką.
+            // 4. jesli nie posiada żadnych, ale ma piony na mecie, które mogą wykonać ruch - 1 rzut kostką
+            // 5. 
+            break;
+        }
+
+        default: {
+            break;
+        }
+    }
+
+    // 2.
+
+    
+    // sprawdzenie, czy gracz może ruszyć się danym pionem
+    // sprawdzenie, czy gracz posiada jakieś piony na planszy
+    // wyłączyć" pion, którym gracz nie może wykonać ruchu
+    // pokazać odpowiedni komunikat
+    // wskazanie pionów, którymi gracz może wykonać ruch
 }
 
 function moveThroughHomeFields(clickedPawnParentPosition) {
@@ -115,15 +152,15 @@ function moveThroughHomeFields(clickedPawnParentPosition) {
     const newPosition = +previousPosition + state.rolledDice;
 
     if(newPosition > 4) {
-        game.changeTurn();
-        clearContainer(DOM_ELEMENTS.gameActions);
-        scoreboardView.createScoreboard();
+        noMovesHandler("overreach");
+        // game.changeTurn();
+        // clearContainer(DOM_ELEMENTS.gameActions);
+        // scoreboardView.createScoreboard();
     } else {
         const fieldToEnter = activePlayerMetaFields.find(f => +f.dataset.field === newPosition);
 
         const isEmpty = checkIfFieldIsEmpty(fieldToEnter);
 
-        console.log(state);
         if(isEmpty && state.isDiceRolled) {
             state.canPlayerMove = true;
             return fieldToEnter;
@@ -131,7 +168,7 @@ function moveThroughHomeFields(clickedPawnParentPosition) {
     }
 }
 
-function takeoverRegularField(fieldToEnter, foundPawn) {
+function takeoverRegularField(fieldToEnter, foundPawn, foundPlayer) {
     const pawnOnField = fieldToEnter.childNodes[0];
     const playerPawnColor = pawnOnField.dataset.color;
 
@@ -142,6 +179,7 @@ function takeoverRegularField(fieldToEnter, foundPawn) {
     
     if(takeover) {
         const baseFieldToEnter = activePlayerBaseFields.find(bf => bf.dataset.index === pawnOnField.dataset.index);
+        const takeoveredPlayer = state.players.find(p => p.color === playerPawnColor);
 
         const newPawn = {
             type: "home",
@@ -150,6 +188,7 @@ function takeoverRegularField(fieldToEnter, foundPawn) {
             index: +baseFieldToEnter.dataset.index
         }
 
+        pawnController.reduceNumberOfPawns(takeoveredPlayer, "base", "+");
         pawnController.updatePawnStateOnBoard(fieldToEnter, baseFieldToEnter, foundPawn, pawnOnField);
         state.players.find(p => p.color === playerPawnColor).pawns[+newPawn.index - 1] = newPawn;
     }
@@ -177,7 +216,7 @@ export function movePawn(e) {
     if(foundPlayer.name === state.activePlayer.name && state.isDiceRolled) {
         switch (clickedPawnParentPositionType) {
             case "home": {
-                fieldToEnter = goOutFromBase(foundPawn);
+                fieldToEnter = goOutFromBase(foundPawn, foundPlayer);
                 break;
             }
 
@@ -187,12 +226,12 @@ export function movePawn(e) {
             }
 
             case "regular": {
-                fieldToEnter = moveThroughBoard(clickedPawnParent, foundPawn, foundPlayer);
+                fieldToEnter = moveThroughBoard(clickedPawnParent, foundPawn, foundPlayer, clickedPawn);
                 break;
             }
 
             case "meta": {
-                fieldToEnter = moveThroughHomeFields(clickedPawnParent, clickedPawn, foundPawn);
+                fieldToEnter = moveThroughHomeFields(clickedPawnParent);
                 break;
             }
 
@@ -201,8 +240,6 @@ export function movePawn(e) {
         }
 
         if(state.canPlayerMove) {
-            Player.reduceNumberOfPawns("home", "-");
-            
             pawnController.updatePawnStateOnBoard(clickedPawnParent, fieldToEnter, foundPawn, clickedPawn);
             
             game.changeTurn();
