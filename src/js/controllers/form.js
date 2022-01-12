@@ -4,52 +4,17 @@ import {clearInput} from "../utils/functions";
 import {CLASSES} from "../utils/classes";
 
 import Player from "../models/Player";
-import Game from "../models/Game";
 
 import * as formView from "../views/form";
 import * as playerView from "../views/player";
 import * as notificationView from "../views/notification";
-import * as scoreboardView from "../views/scoreboard";
 
 import * as notificationController from "../controllers/notification";
-import * as boardController from "../controllers/board";
 import * as gameController from "../controllers/game";
+import * as validationController from "../controllers/validation";
 
 
 const {playersFields, playerNameInput, colorPickerButtons} = DOM_ELEMENTS;
-
-const game = new Game();
-
-function addFieldToEnterHome(color) {
-    let field;
-    
-    switch (color) {
-        case "red": {
-            field = 40;
-            break;
-        }
-
-        case "green": {
-            field = 30;
-            break;
-        }
-    
-        case "yellow": {
-            field = 20;
-            break;
-        }
-    
-        case "blue": {
-            field = 10;
-            break;
-        }
-    
-        default:
-            break;
-    }
-
-    return field;
-}
 
 export function changeAmountOfPlayers(value) {
     state.numberOfPlayers = +value;
@@ -102,7 +67,6 @@ export function updateFormBodyDOM(value) {
 export function deletePlayer(e) {
     e.preventDefault();
     const name = e.target.closest(".player").dataset.name;
-    const success = notificationController.successHandler("playerRemoved");
 
     e.target.closest(".player").remove();
     
@@ -110,7 +74,7 @@ export function deletePlayer(e) {
 
     updateFormBodyDOM([...playersFields].length);
 
-    notificationView.displayNotification(success, "success");
+    notificationController.showNotifcationHandler("playerRemoved");
     formView.changeTextButton();
 }
 
@@ -118,27 +82,28 @@ export function submitForm(e) {
     e.preventDefault();
     const extractedPlayersNames = state.players.map(p => p.name);
     const playerExistance = !extractedPlayersNames.includes(playerNameInput.value);
-    const valuesToCheck = {
+    
+    const playerDetails = {
         name: playerNameInput.value,
         color: state.pickedColor === "" ? undefined : state.pickedColor.dataset.color,
         existance: playerExistance
     }
-    const error = notificationController.errorHandler(valuesToCheck);
-    const success = notificationController.successHandler("playerAdded");
+
+    const formValidation = validationController.formValidation(playerDetails);
 
     if(state.players.length === state.numberOfPlayers) {
         gameController.startGame();
     } else {   
-        if(error.flag) {
-            notificationView.displayNotification(error.msg, "error");
+        if(formValidation.flag) {
+            notificationView.displayNotification(formValidation.msg, "error");
         } else {
-            const fieldToEnterHome = addFieldToEnterHome(state.pickedColor.dataset.color);
+            const fieldToEnterHome = state.playersLastRegularField[state.pickedColor.dataset.color];
             const player = new Player(playerNameInput.value, state.pickedColor.dataset.color, fieldToEnterHome);
             
             disablePickedButton();
 
             playerView.addPlayerField(state.players.length, playerNameInput.value, state.pickedColor.dataset.color);
-            notificationView.displayNotification(success, "success");
+            notificationController.showNotifcationHandler("playerAdded");
             
             player.addPlayer();
             formView.changeTextButton();

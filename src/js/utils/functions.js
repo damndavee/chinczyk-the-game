@@ -12,6 +12,10 @@ export function insertHTML(parent, child, position = "beforeend") {
 	parent.insertAdjacentHTML(position, child);
 }
 
+export function disableButton(button, flag) {
+	button.disabled = flag;
+}
+
 export function checkIfFieldIsEmpty(fieldToEnter) {
     return fieldToEnter.innerHTML === "" ? true : false;
 }

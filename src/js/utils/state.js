@@ -8,6 +8,8 @@ const state = {
             homePawns: 0,
             basePawns: 4,
             lastField: 40,
+            diceRolls: 3,
+            isDiceRollUpdated: false,
             pawns: [
                 {type: "home", position: "1", color: "red", index: 1},
                 {type: "home", position: "2", color: "red", index: 2},
@@ -22,6 +24,8 @@ const state = {
             homePawns: 0,
             basePawns: 4,
             lastField: 10,
+            diceRolls: 3,
+            isDiceRollUpdated: false,
             pawns: [
                 {type: "home", position: "1", color: "blue", index: 1},
                 {type: "home", position: "2", color: "blue", index: 2},
@@ -56,7 +60,13 @@ const state = {
         //     ]
         // }
     ],
-    // players: [],
+    //players: [],
+    playersLastRegularField: {
+        "red": 40,
+        "green": 30,
+        "yellow": 20,
+        "blue": 10
+    },
     dice: {
         1: "one",
         2: "two",
@@ -71,6 +81,13 @@ const state = {
     pickedColor: '',
     turn: null,
     canPlayerMove: false,
+    isTurnFinnished: false,
+    hasGameEnded: false,
+    error: {
+        hasOccured: false,
+        type: "",
+        player: {}
+    },
 }
 
 export default state;

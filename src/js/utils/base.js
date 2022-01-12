@@ -9,6 +9,8 @@ export const DOM_ELEMENTS = {
     gameContainer: document.querySelector("#game"),
     gameBoard: document.querySelector("#game-board"),
     gameActions: document.querySelector("#game-actions"),
+    gameControls: document.querySelector("#controls"),
+    gamePlayerInfo: document.querySelector("#scoreboard")
 }
 
 const getBoardFields = () => {
@@ -17,7 +19,8 @@ const getBoardFields = () => {
         startFields: [...document.querySelectorAll("[data-field]")].filter(f => f.dataset.type.includes("start")),
         regularFields: [...document.querySelectorAll("[data-field]")].filter(f => f.dataset.type.includes("regular")),
         playableFields: [...document.querySelectorAll("[data-playable]")],
-        metaFields: [...document.querySelectorAll("[data-field]")].filter(f => f.dataset.type.includes("meta"))
+        metaFields: [...document.querySelectorAll("[data-field]")].filter(f => f.dataset.type.includes("meta")),
+        rollBtn: document.querySelector("#dice-btn"),
     }
 }
 
