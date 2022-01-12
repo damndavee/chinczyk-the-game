@@ -1,56 +1,58 @@
-export function errorHandler(valuesToCheck) {
-    let msg;
-    let flag;
+import { ACTIONS, FORM_VALIDATION_MSG, IN_GAME_MSG } from "../utils/events";
 
-    switch (true) {
-        case (valuesToCheck.name === "" && valuesToCheck.color === undefined): {
-            msg = "Neither player name nor color was choosen!";
-            break;
-        }
-        case valuesToCheck.name === "": {
-            msg = "No player name was choosen!";
-            break;
-        }
-        case valuesToCheck.color === undefined: {
-            msg = "No color was choosen!";
-            break;
-        }
-        case !valuesToCheck.existance: {
-            msg = "Player with that name already exists!";
-            break;
-        }
-        case valuesToCheck.name.length > 10: {
-            msg = "Name is too long. Choose between 4 and 10 characters!";
-            break;
-        }
-        case valuesToCheck.name.length < 4: {
-            msg = "Name is too short. Choose between 4 and 10 characters!";
-            break;
-        }
-        default:
-            break;
-    } 
-    return {
-        flag: msg === undefined ? false : true,
-        msg
-    }
-}
+import * as notificationView from "../views/notification";
 
-export function successHandler(action) {
-    let msg;
-    
+export function showNotifcationHandler(action) {
+    let msg, type = "inGame";
+
+    // console.log(action);
+
     switch (action) {
-        case "playerAdded": {
-            msg = "Player has been added!"
+        case ACTIONS.PLAYER_ADDED_ACTION: {
+            msg = FORM_VALIDATION_MSG.PLAYER_ADDED;
+            type = "success";
             break;
         }
-        case "playerRemoved": {
-            msg = "Player has been removed!"
+
+        case ACTIONS.PLAYER_REMOVED_ACTION: {
+            msg = FORM_VALIDATION_MSG.PLAYER_REMOVED;
+            type = "success";
             break;
         }
+
+        case ACTIONS.NO_ROLLS_LEFT_ACTION: {
+            msg = IN_GAME_MSG.NO_ROLLS;
+            break;
+        }
+
+        case ACTIONS.OVERREACH_FIELD_ACTION: {
+            msg = IN_GAME_MSG.OVERREACH;
+            break;
+        }
+            
+        case ACTIONS.NO_PAWNS_ON_BOARD_ACTION: {
+            msg = IN_GAME_MSG.NO_PAWNS_AVAILABLE;
+            break;
+        }
+
+        case ACTIONS.NO_POTENTIAL_MOVES_ACTION: {
+           msg = IN_GAME_MSG.NO_POTENTIAL_MOVES;
+           break;
+        }
+
+        case ACTIONS.MOVE_IS_POSSIBLE_ACTION: {
+            msg = IN_GAME_MSG.MOVE_IS_POSSIBLE;
+            break;
+        }
+
+        case ACTIONS.NOT_EMPTY_FIELD_ACTION: {
+            msg = IN_GAME_MSG.NOT_EMPTY_FIELD;
+            break;
+        }
+            
         default:
             break;
     }
 
-    return msg;
+    notificationView.displayNotification(msg, type);
 }

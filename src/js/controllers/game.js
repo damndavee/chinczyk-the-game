@@ -3,22 +3,25 @@ import state from "../utils/state";
 
 import * as pawnController from "../controllers/pawn";
 import * as boardController from "../controllers/board";
+import * as notificationController from "../controllers/notification";
 
 import * as scoreboardView from "../views/scoreboard";
 
-import Player from "../models/Player";
-
-import { clearContainer, checkIfFieldIsEmpty, checkIfTheSameColorPawn, findPawnInState, findPlayerInState } from "../utils/functions";
+import { checkIfFieldIsEmpty, checkIfTheSameColorPawn, disableButton, findPawnInState, findPlayerInState } from "../utils/functions";
 import { DOM_ELEMENTS, getFilteredBoardFields } from "../utils/base";
+import { SITUATIONS } from "../utils/events";
 
 const game = new Game();
 
 export function startGame() {
     DOM_ELEMENTS.header.remove();
-    DOM_ELEMENTS.gameActions.style = "block";
+    DOM_ELEMENTS.gameContainer.style.display = "flex";
+    DOM_ELEMENTS.gameActions.style.display = "flex";
     boardController.createBoard();
     game.setTurn();
     scoreboardView.createScoreboard();
+    // console.log(state);
+    // noMovesHandler("noPawnsOnBoard");
 }
 
 function goOutFromBase(foundPawn, foundPlayer) {
@@ -36,6 +39,7 @@ function goOutFromBase(foundPawn, foundPlayer) {
     if (state.rolledDice === 6) {
         pawnController.reduceNumberOfPawns(foundPlayer, "base", "-");
         state.canPlayerMove = true;
+        state.activePlayer.diceRolls = 1;
         return activePlayerStartField;
     }
 }
@@ -57,6 +61,7 @@ function leaveStartField(clickedPawnParentPosition, foundPawn) {
     
     if(state.isDiceRolled) {
         state.canPlayerMove = true;
+        state.activePlayer.diceRolls = 1;
         return regularFieldToEnter;
     }
 }
@@ -93,11 +98,23 @@ function moveThroughBoard(clickedPawnParentPosition, foundPawn, foundPlayer) {
 
     if(state.isDiceRolled && fieldToEnter != undefined) {
         state.canPlayerMove = true;
+        state.activePlayer.diceRolls = 1;
         return fieldToEnter;
     }
 }
 
 function enterHomeFields(homePosition, metaFields, foundPlayer) {
+    const fieldToEnter = metaFields.find(f => +f.dataset.field === homePosition);
+    const isEmpty = fieldToEnter === undefined ? true : checkIfFieldIsEmpty(fieldToEnter);
+
+    console.log(isEmpty);
+
+    if(!isEmpty) {
+        console.log("????");
+        noMovesHandler("notEmptyField");
+        return;
+    }
+
     if(homePosition > 0 && homePosition < 5) {
         pawnController.reduceNumberOfPawns(foundPlayer, "meta", "+");
         return metaFields.find(f => +f.dataset.field === homePosition);
@@ -106,23 +123,141 @@ function enterHomeFields(homePosition, metaFields, foundPlayer) {
     }
 }
 
-function noMovesHandler(situation) {
-    //const activePlayer = state.players.find(p => p.name === activePlayer.name);
+export function isMovePossible() {
+    let newPosition;
+
+    const {activePlayer, rolledDice} = state;
+    const lastFieldToEnter = activePlayer.lastField;
+    const metaFields = getFilteredBoardFields("metaFields").filter(f => f.dataset.playerColor === state.activePlayer.color);
+    
+    const pawns = [...activePlayer.pawns.filter(pawn => pawn.type !== "home")];
+    const pawnsPositionsArray = pawns.map(pawn => ({position: +pawn.position, type: pawn.type, canMove: true}));
+
+    if(activePlayer.homePawns > 0 && activePlayer.boardPawns === 0) {
+        noMovesHandler("noPawnsOnBoard");
+    }
+    
+    if(pawns.length > 0) {
+        const newPawnsPositionsArray = pawnsPositionsArray.map(pawn => {
+            const calculatedPosition = pawn.position + rolledDice;
+            const calculatedHomePosition = calculatedPosition - lastFieldToEnter;
+            // const fieldToEnter = metaFields.find(f => +f.dataset.field === calculatedPosition);
+           
+            // const isEmpty = fieldToEnter === undefined ? true : checkIfFieldIsEmpty(fieldToEnter);
+            
+            newPosition = calculatedPosition > 40 ? calculatedPosition - 40 : calculatedPosition;
+            // zrobić osobne fieldToEnter ale tylko dla pól dla mety
+            switch (pawn.type) {
+                case "regular": {
+                    if(calculatedPosition > lastFieldToEnter && pawn.position <= lastFieldToEnter && calculatedHomePosition < 7) {
+                        if(calculatedHomePosition < 0 || calculatedHomePosition > 4) {
+                            pawn.canMove = false;
+                        } else {
+                            const fieldToEnter = metaFields.find(f => +f.dataset.field === calculatedHomePosition);
+                            console.log("HOMEPOSITION:", calculatedHomePosition);
+                            const isEmpty = fieldToEnter === undefined ? false : checkIfFieldIsEmpty(fieldToEnter);
+                            isEmpty || (pawn.canMove = false);
+                        }
+                    }
+                    break;
+                }
+                
+                case "meta": {
+                    const fieldToEnter = metaFields.find(f => +f.dataset.field === calculatedHomePosition);
+                    console.log("HOMEPOSITION:", calculatedHomePosition);
+                    const isEmpty = fieldToEnter === undefined ? false : checkIfFieldIsEmpty(fieldToEnter);
+
+                    if(calculatedPosition > 4 || !isEmpty) {
+                        pawn.canMove = false;
+                    } else {
+                        pawn.canMove = true;
+                    }
+                }
+            
+                default:
+                    break;
+            }
+
+            return {
+                position: newPosition,
+                type: pawn.type,
+                canMove: pawn.canMove
+            }
+        });
+
+        const flag = newPawnsPositionsArray.every(pawn => pawn.canMove === false);
+        console.log(flag);
+        console.log(newPawnsPositionsArray);
+        return flag;
+    }
+}
+
+export function noMovesHandler(situation, takeoverdPlayer = null,) {
+    const player = state.players.find(p => p.name === state.activePlayer.name);
+    const metaFields = getFilteredBoardFields("metaFields").filter(f => f.dataset.playerColor === state.activePlayer.color);
+    const playerPawnsOnMeta = player.homePawns;
+
 
     switch(situation) {
-        case "overreach": {
-            // 1. overreach - nie można tym pionkiem wejść na metę
-            // wyświetlić komunikat o niemożliwym do wykonania ruchu -> wybierz inny pion
-            console.log("YOU CANNOT ENTER THIS FIELD!");
+        case SITUATIONS.OVERREACH: {
+            player.diceRolls = 1;
+            notificationController.showNotifcationHandler("overreach");
             break;
         }
 
-        case "noPawnsOnBoard": {
-            // 1. pobrać aktualnego gracza ze state'u
-            // 2. zobaczyć, ile posiada pionów na planszy
-            // 3. jeśli nie posiada żadnych - 3 rzuty kostką.
-            // 4. jesli nie posiada żadnych, ale ma piony na mecie, które mogą wykonać ruch - 1 rzut kostką
-            // 5. 
+        case SITUATIONS.NO_POTENTIAL_MOVES: {
+            player.diceRolls = 1;
+            notificationController.showNotifcationHandler("noPotentialMoves");
+            break;
+        }
+        
+        case SITUATIONS.NO_ROLLS_LEFT: {
+            player.diceRolls = 3;
+            notificationController.showNotifcationHandler("noRolls");
+            break;
+        }
+        
+        case SITUATIONS.NO_PAWNS_ON_BOARD: {
+            const fields = [];
+            let flag = false;
+
+            for(let i = metaFields.length - 1; i >= 0; i--) {
+                if(i === metaFields.length - playerPawnsOnMeta - 1) {
+                    break;
+                }
+
+                fields.push(metaFields[i]);
+            }
+
+            if(fields.every(field => field.innerHTML != "")) {
+                flag = true;
+            }
+
+            if(flag && player.isDiceRollUpdated) {
+                player.diceRolls = 3;
+                player.isDiceRollUpdated = false;
+            }
+
+            if(flag && player.boardPawns != 0) {
+                player.diceRolls = 1;
+            }
+            
+            if(!flag && player.isDiceRollUpdated) {
+                player.diceRolls = 1;
+            }
+
+            if(flag && state.rolledDice != 6 && player.diceRolls === 1) {
+                notificationController.showNotifcationHandler("noPawnsOnBoard");
+            }
+
+            takeoverdPlayer && (takeoverdPlayer.diceRolls = 3);
+
+            break;
+        }
+
+        case SITUATIONS.NOT_EMPTY_FIELD: {
+            player.diceRolls = 1;
+            notificationController.showNotifcationHandler("notEmptyField");
             break;
         }
 
@@ -130,15 +265,6 @@ function noMovesHandler(situation) {
             break;
         }
     }
-
-    // 2.
-
-    
-    // sprawdzenie, czy gracz może ruszyć się danym pionem
-    // sprawdzenie, czy gracz posiada jakieś piony na planszy
-    // wyłączyć" pion, którym gracz nie może wykonać ruchu
-    // pokazać odpowiedni komunikat
-    // wskazanie pionów, którymi gracz może wykonać ruch
 }
 
 function moveThroughHomeFields(clickedPawnParentPosition) {
@@ -153,9 +279,6 @@ function moveThroughHomeFields(clickedPawnParentPosition) {
 
     if(newPosition > 4) {
         noMovesHandler("overreach");
-        // game.changeTurn();
-        // clearContainer(DOM_ELEMENTS.gameActions);
-        // scoreboardView.createScoreboard();
     } else {
         const fieldToEnter = activePlayerMetaFields.find(f => +f.dataset.field === newPosition);
 
@@ -191,7 +314,31 @@ function takeoverRegularField(fieldToEnter, foundPawn, foundPlayer) {
         pawnController.reduceNumberOfPawns(takeoveredPlayer, "base", "+");
         pawnController.updatePawnStateOnBoard(fieldToEnter, baseFieldToEnter, foundPawn, pawnOnField);
         state.players.find(p => p.color === playerPawnColor).pawns[+newPawn.index - 1] = newPawn;
+        
+        console.log(takeoveredPlayer.boardPawns);
+        takeoveredPlayer.boardPawns === 0 && noMovesHandler("noPawnsOnBoard", takeoveredPlayer);
     }
+}
+``
+export function nextRound() {
+    game.changeTurn();
+    state.isTurnFinnished = false;
+    state.activePlayer.isDiceRollUpdated = true; 
+    noMovesHandler("noPawnsOnBoard");
+    state.isTurnFinnished = false;
+    scoreboardView.resetGameUI();
+    // console.log(state);
+}
+
+function checkIfGameEnded() {
+    if(state.activePlayer.homePawns === 4) {
+        state.hasGameEnded = true;
+        endGame();
+    }
+}
+
+function endGame() {
+    alert("RUCHAM CI MATKĘ!!111!");
 }
 
 export function movePawn(e) { 
@@ -242,9 +389,11 @@ export function movePawn(e) {
         if(state.canPlayerMove) {
             pawnController.updatePawnStateOnBoard(clickedPawnParent, fieldToEnter, foundPawn, clickedPawn);
             
-            game.changeTurn();
-            clearContainer(DOM_ELEMENTS.gameActions);
-            scoreboardView.createScoreboard();
+            checkIfGameEnded();
+            // logika za ponowny rzut kostką w przypadku wyrzucenia 6
+            state.hasGameEnded ? endGame() : nextRound();
+            // if(state.rolledDice !== 6) {
+            // }
         }
     }
 }
