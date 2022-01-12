@@ -8,20 +8,14 @@ export default class Game {
     setTurn() {
         state.turn = Math.floor(Math.random() * state.players.length);
         this.tempNumber = state.turn;
-        state.activePlayer = {
-            name: state.players[state.turn].name,
-            color: state.players[state.turn].color
-        };
+        state.activePlayer = state.players[state.turn];
     }
     
     changeTurn() {
         state.rolledDice = null;
         this.tempNumber++;
         state.turn = this.tempNumber % state.players.length;
-        state.activePlayer = {
-            name: state.players[state.turn].name,
-            color: state.players[state.turn].color
-        };
+        state.activePlayer = state.players[state.turn];
         state.isDiceRolled = false;
         state.canPlayerMove = false;
     }

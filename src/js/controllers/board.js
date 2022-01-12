@@ -94,7 +94,7 @@ function createRegularFields(container) {
 }
 
 function createActionsPanel() {
-    domEl.gameActions.style.display = "block";
+    domEl.gameActions.style.display = "flex";
 }
 
 export function createBoard() {
